@@ -1,0 +1,3 @@
+[submodule ".deps/cheartpy"]
+	path = .deps/cheartpy
+	url = git@github.com:willwiz/cheartpy.git

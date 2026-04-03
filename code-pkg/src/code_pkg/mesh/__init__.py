@@ -3,8 +3,8 @@ from ._types import MeshDef
 
 __all__ = [
     "MeshDef",
-    "MeshTuple",
     "MeshFields",
+    "MeshTuple",
     "export_cylinder_mesh",
     "make_cylinder_mesh",
 ]

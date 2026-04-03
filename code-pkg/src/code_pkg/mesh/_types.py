@@ -1,8 +1,11 @@
-from pathlib import Path
-from typing import Literal, Required
+from typing import TYPE_CHECKING, Literal, Required
 
-from pytools.arrays import ToFloat, ToInt
 from typing_extensions import TypedDict
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    from pytools.arrays import ToFloat, ToInt
 
 
 class CylinderDef(TypedDict, total=False):
@@ -15,9 +18,12 @@ class CylinderDef(TypedDict, total=False):
     shape
         The physical dimensions of the cylinder (rin, rout, length).
     offset
-        The offset of the inner surface from the centerline, as a fraction of the wall thickness. Default is 0.0 (left aligned).
+        The offset of the inner surface from the centerline, as a fraction of the wall thickness.
+        Default is 0.0 (left aligned).
     orientation
-        The axis along which the cylinder is oriented. Must be one of "x", "y", or "z". Default is "z".
+        The axis along which the cylinder is oriented. Must be one of "x", "y", or "z".
+        Default is "z".
+
     """
 
     size: Required[tuple[ToInt, ToInt, ToInt]]
@@ -44,6 +50,7 @@ class BndTags(TypedDict, total=True):
         The tag for the outlet boundary condition.
     wall
         The tag for the wall boundary condition.
+
     """
 
     inlet: str
@@ -61,6 +68,7 @@ class TopTags(TypedDict, total=True):
         The tag for the displacement field.
     pres
         The tag for the pressure field.
+
     """
 
     disp: str
@@ -78,6 +86,7 @@ class FieldTags(TypedDict, total=True):
         The tag for the center position field.
     fiber
         The tag for the fiber direction field.
+
     """
 
     cl: str
@@ -93,6 +102,7 @@ class MeshDef(TypedDict, total=True):
     ----------
     cylinder
         The definition of the cylinder mesh.
+
     """
 
     geo: GeoDef

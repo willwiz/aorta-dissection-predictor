@@ -1,12 +1,15 @@
+from typing import TYPE_CHECKING, NamedTuple
+
 import numpy as np
 from cheartpy.io.api import chwrite_d_utf
-from cheartpy.mesh import CheartMesh
 from cheartpy.mesh_tools.cylinder_core import create_cylinder_mesh
 from cheartpy.mesh_tools.surface_core import normalize_by_row
-from pytools.arrays import A2, ToFloat
-from typing_extensions import NamedTuple
 
-from ._types import CylinderDef, MeshDef
+if TYPE_CHECKING:
+    from cheartpy.mesh import CheartMesh
+    from pytools.arrays import A2, ToFloat
+
+    from ._types import CylinderDef, MeshDef
 
 
 class MeshTuple[F: np.floating, I: np.integer](NamedTuple):
@@ -35,9 +38,7 @@ def create_fiber_field[F: np.floating, I: np.integer](
     else:
         z[:, 0] = 1.0
     c = np.cross(r, z)
-    return np.column_stack((z, c, r)).astype(fields.cl.dtype), normal.astype(
-        fields.cl.dtype
-    )
+    return np.column_stack((z, c, r)).astype(fields.cl.dtype), normal.astype(fields.cl.dtype)
 
 
 def warp_in_y[F: np.floating](x: A2[F]) -> A2[F]:
@@ -60,9 +61,7 @@ def define_centerline_field[F: np.floating, I: np.integer](
     return np.hstack((center_line, circval[:, None]))
 
 
-def create_center_pos[F: np.floating, I: np.integer](
-    mesh: CheartMesh[F, I], cl: A2[F]
-) -> A2[F]:
+def create_center_pos[F: np.floating, I: np.integer](mesh: CheartMesh[F, I], cl: A2[F]) -> A2[F]:
     center = np.zeros_like(mesh.space.v)
     center[:, 0] = mesh.space.v[:, 0].max() * cl[:, 0]
     return center

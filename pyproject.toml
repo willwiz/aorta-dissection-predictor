@@ -10,10 +10,11 @@ dependencies = [
 ]
 
 [tool.uv.sources]
-cheartpy = { git = "https://github.com/willwiz/cheartpy.git" }
 code-pkg = { workspace = true, editable = true }
+cheartpy = { workspace = true, editable = true }
 
 [tool.uv.workspace]
 members = [
     "code-pkg",
+    ".deps/cheartpy",
 ]

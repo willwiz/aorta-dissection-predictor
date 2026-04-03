@@ -3,8 +3,10 @@
 # ///
 
 from pathlib import Path
+from typing import TYPE_CHECKING
 
-from code_pkg.mesh import MeshDef
+if TYPE_CHECKING:
+    from code_pkg.mesh import MeshDef
 
 DEFAULT_CYLINDER: MeshDef = {
     "geo": {

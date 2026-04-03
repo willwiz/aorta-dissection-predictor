@@ -11,4 +11,11 @@ wheels/
 
 # Data Directories
 /mesh
-/*.vtu
+
+# Data files
+*.vtu
+*.log
+*.err
+*.D
+
+/test*.py
