@@ -8,9 +8,8 @@ from code_pkg.mesh import MeshDef
 
 DEFAULT_CYLINDER: MeshDef = {
     "geo": {
-        "shape": (1.0, 0.2, 0.2),
-        "size": (20, 10, 10),
-        "offset": 0.0,
+        "shape": (1.0, 2.0, 5.0),
+        "size": (3, 16, 50),
         "orientation": "x",
         "warp": True,
     },
