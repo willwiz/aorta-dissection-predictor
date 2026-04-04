@@ -16,6 +16,7 @@
     },
     "python.analysis.diagnosticMode": "workspace",
     "python.analysis.importFormat": "relative",
+    "python.analysis.autoImportCompletions": true,
     "python.analysis.completeFunctionParens": true,
     "python.analysis.enableColorPicker": false,
     "python.analysis.enablePytestSupport": true,

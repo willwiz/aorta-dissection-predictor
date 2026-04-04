@@ -15,11 +15,42 @@ DEFAULT_CYLINDER: MeshDef = {
         "orientation": "x",
         "warp": True,
     },
-    "home": Path("mesh") / "cylinder",
-    "elem": "HEX",
-    "order": 2,
-    "top": {"disp": "cyl_quad", "pres": "cyl_lin"},
-    "bnds": {"inlet": "inlet", "outlet": "outlet", "inner": "inner", "outer": "outer"},
+    "home": Path("mesh"),
+    "top": {
+        "Disp": {"prefix": "cyl_quad", "elem": "hex", "order": 2},
+        "Pres": {"prefix": "cyl_lin", "elem": "hex", "order": 1},
+    },
+    "bnds": {
+        "Inlet": {"name": "Inlet", "tag": 1},
+        "Outlet": {"name": "Outlet", "tag": 2},
+        "Inner": {"name": "Inner", "tag": 3},
+        "Outer": {"name": "Outer", "tag": 4},
+    },
+    "fields": {
+        "cl": "CenterLine-0.D",
+        "center": "CenterPoint-0.D",
+        "fiber": "Fiber-0.D",
+        "normal": "Normal-0.D",
+    },
+}
+PILOT_CYLINDER: MeshDef = {
+    "geo": {
+        "shape": (1.0, 2.0, 5.0),
+        "size": (3, 16, 50),
+        "orientation": "x",
+        "warp": True,
+    },
+    "home": Path("mesh_bent_cylinder"),
+    "top": {
+        "Disp": {"prefix": "cyl_quad", "elem": "hex", "order": 2},
+        "Pres": {"prefix": "cyl_lin", "elem": "hex", "order": 1},
+    },
+    "bnds": {
+        "Inlet": {"name": "Inlet", "tag": 1},
+        "Outlet": {"name": "Outlet", "tag": 2},
+        "Inner": {"name": "Inner", "tag": 3},
+        "Outer": {"name": "Outer", "tag": 4},
+    },
     "fields": {
         "cl": "CenterLine-0.D",
         "center": "CenterPoint-0.D",

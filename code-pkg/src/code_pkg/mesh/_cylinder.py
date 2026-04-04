@@ -99,17 +99,17 @@ def make_cylinder_mesh(
 
 
 def export_cylinder_mesh[F: np.floating, I: np.integer](
-    param: MeshDef, mesh: MeshTuple, fields: MeshFields | None
+    param: MeshDef, mesh: MeshTuple[F, I], fields: MeshFields[F] | None
 ) -> None:
     param["home"].mkdir(parents=True, exist_ok=True)
-    mesh.lin.save(param["home"] / param["top"]["pres"])
-    mesh.disp.save(param["home"] / param["top"]["disp"])
+    mesh.lin.save(param["home"] / param["top"]["Pres"]["prefix"])
+    mesh.disp.save(param["home"] / param["top"]["Disp"]["prefix"])
     if not fields:
         return
     field_list = (
         (param["fields"]["cl"], fields.cl),
         (param["fields"]["normal"], fields.normal),
-        ("Fibers-0.D", fields.fiber),
+        (param["fields"]["fiber"], fields.fiber),
         ("Z-0.D", fields.fiber[:, 0:3]),
         ("C-0.D", fields.fiber[:, 3:6]),
         ("R-0.D", fields.fiber[:, 6:9]),

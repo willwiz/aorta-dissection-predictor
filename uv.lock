@@ -171,7 +171,9 @@ dependencies = [
     { name = "cheartpy-io" },
     { name = "cheartpy-vtk" },
     { name = "numpy" },
+    { name = "pydantic" },
     { name = "pytools" },
+    { name = "scipy-stubs", extra = ["scipy"] },
 ]
 
 [package.metadata]
@@ -179,7 +181,9 @@ requires-dist = [
     { name = "cheartpy-io" },
     { name = "cheartpy-vtk" },
     { name = "numpy" },
+    { name = "pydantic" },
     { name = "pytools" },
+    { name = "scipy-stubs", extras = ["scipy"] },
 ]
 
 [[package]]

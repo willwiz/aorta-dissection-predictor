@@ -11,11 +11,14 @@ wheels/
 
 # Data Directories
 /mesh
+/results*
+/test_*
+/*.zip
+/*.tar.gz
+/test*.py
 
 # Data files
 *.vtu
 *.log
 *.err
-*.D
 
-/test*.py

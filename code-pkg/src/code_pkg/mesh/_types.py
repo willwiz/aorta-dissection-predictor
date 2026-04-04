@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING, Literal, Required
 from typing_extensions import TypedDict
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
     from pathlib import Path
 
     from pytools.arrays import ToFloat, ToInt
@@ -34,45 +35,21 @@ class CylinderDef(TypedDict, total=False):
 
 
 type GeoDef = CylinderDef
-type ElementTypes = Literal["HEX", "TET"]
+type ElementTypes = Literal["hex", "tet"]
 _TOPS = Literal["Disp", "Pres"]
 _FIELDS = Literal["cl", "center", "fiber"]
+_BNDS = Literal["Inlet", "Outlet", "Inner", "Outer"]
 
 
-class BndTags(TypedDict, total=True):
-    """Definition of boundary condition tags.
-
-    Parameters
-    ----------
-    inlet
-        The tag for the inlet boundary condition.
-    outlet
-        The tag for the outlet boundary condition.
-    wall
-        The tag for the wall boundary condition.
-
-    """
-
-    inlet: str
-    outlet: str
-    inner: str
-    outer: str
+class BndTag(TypedDict, total=True):
+    name: str
+    tag: int
 
 
-class TopTags(TypedDict, total=True):
-    """Definition of top tags.
-
-    Parameters
-    ----------
-    disp
-        The tag for the displacement field.
-    pres
-        The tag for the pressure field.
-
-    """
-
-    disp: str
-    pres: str
+class TopSpec(TypedDict, total=True):
+    prefix: str
+    elem: ElementTypes
+    order: int
 
 
 class FieldTags(TypedDict, total=True):
@@ -107,8 +84,6 @@ class MeshDef(TypedDict, total=True):
 
     geo: GeoDef
     home: Path
-    elem: ElementTypes
-    order: int
-    top: TopTags
+    top: Mapping[_TOPS, TopSpec]
     fields: FieldTags
-    bnds: BndTags
+    bnds: Mapping[_BNDS, BndTag]

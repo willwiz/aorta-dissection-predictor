@@ -1,5 +1,10 @@
 {
-  "include": ["cheartpy-*/**/*.py", "cheartpy-*/**/*.pyi"],
+  "include": [
+    "code-pkg",
+    "data",
+    "./make_*.py",
+    "./compute_*.py",
+  ],
   "exclude": [
     ".git",
     ".venv",
@@ -13,8 +18,9 @@
     "**/*.vtu",
     "**/*.log",
   ],
-  "ignore": [".deps"],
-  "autoImportCompletions": true,
+  "ignore": [
+    ".deps"
+  ],
   "typeCheckingMode": "strict",
   "deprecateTypingAliases": true,
   "strictDictionaryInference": true,
