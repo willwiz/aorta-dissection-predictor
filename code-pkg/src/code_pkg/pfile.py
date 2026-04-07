@@ -30,7 +30,7 @@ if TYPE_CHECKING:
 def main_pfile(p: ProblemDef) -> IPFile:
     time = create_time(p["time"])
     tops = create_cylinder_topologies(p["mesh"])
-    svars = create_solid_variables(p["mesh"], tops)
+    svars = create_solid_variables(p, tops)
     bc_patches, constraints = create_boundary_conditions(
         mesh=p["mesh"], top=tops, svars=svars, bc=p["bc"]
     )

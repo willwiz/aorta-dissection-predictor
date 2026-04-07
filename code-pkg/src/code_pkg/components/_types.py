@@ -89,6 +89,6 @@ class ProblemDef(TypedDict, total=False):
 
 class Variables(NamedTuple):
     Xi: IVariable
-    Xt: IVariable
+    X0: IVariable
     U: IVariable
     P: IVariable

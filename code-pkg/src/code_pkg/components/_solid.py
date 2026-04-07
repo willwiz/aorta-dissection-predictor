@@ -1,5 +1,5 @@
 from collections.abc import Mapping
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING
 
 from cheartpy.fe.api import create_expr, create_solver_matrix, create_variable
 from cheartpy.fe.physics.api import create_solid_mechanics_problem
@@ -25,17 +25,17 @@ if TYPE_CHECKING:
 
 
 def create_solid_variables(
-    mesh: MeshDef,
+    prob: ProblemDef,
     top: TopologyMap[TopologyType],
     *,
     pfx: tuple[str, str, str] | None = None,
     freq: int = 1,
 ) -> Variables:
     x, u, p = pfx or ("X", "U", "P")
-    space = mesh["home"] / x0 if (x0 := mesh.get("space")) else top["Disp"].mesh
+    space = prob["mesh"]["home"] / "X-t.D" if (prob.get("mode") == "inverse") else top["Disp"].mesh
     return Variables(
         Xi=create_variable(f"{x}i", top["Disp"], 3, data=space, freq=freq),
-        Xt=create_variable(f"{x}t", top["Disp"], 3, space, freq=freq),
+        X0=create_variable(f"{x}0", top["Disp"], 3, space, freq=freq),
         U=create_variable(f"{u}", top["Disp"], 3, freq=freq),
         P=create_variable(f"{p}", top["Pres"], 1, freq=freq),
     )
@@ -113,15 +113,9 @@ def _create_residual_strain_deformedvectors(
     mesh: MeshDef, solid: SolidProblem, strain: float
 ) -> ResidualStrainArgs:
     top = solid.variables["Displacement"].get_top()
-    z = create_variable(
-        "Z", top, 3, data=mesh["home"] / mesh["fields"]["Z"].replace("-0.D", "-t.D"), freq=1
-    )
-    c = create_variable(
-        "C", top, 3, data=mesh["home"] / mesh["fields"]["C"].replace("-0.D", "-t.D"), freq=1
-    )
-    r = create_variable(
-        "R", top, 3, data=mesh["home"] / mesh["fields"]["R"].replace("-0.D", "-t.D"), freq=1
-    )
+    z = create_variable("Z", top, 3, data=mesh["home"] / mesh["fields"]["Z"], freq=1)
+    c = create_variable("C", top, 3, data=mesh["home"] / mesh["fields"]["C"], freq=1)
+    r = create_variable("R", top, 3, data=mesh["home"] / mesh["fields"]["R"], freq=1)
     longitudinal_stretch = create_expr("axial_stretch", [f"1.0 + {strain}*min(t, 1.0)"])
     offaxis_compression = create_expr(
         "offaxis_compression", [f"1.0 / sqrt({longitudinal_stretch})"]
@@ -138,7 +132,7 @@ def _create_residual_strain_deformedvectors(
     res_var_weights.add_setting("TEMPORAL_UPDATE_EXPR", res_weights)
     res_var_vectors = create_variable("ResVectors", top, 9, freq=1)
     res_var_vectors.add_setting("TEMPORAL_UPDATE_EXPR", res_vectors)
-    return {"ResidualF-weights": res_var_weights, "ResidualF-vectors": res_var_vectors}
+    return {"ResidualF-weights": res_var_weights, "ResidualF-deformedvectors": res_var_vectors}
 
 
 def create_residual_strain_variables(
@@ -160,14 +154,12 @@ def create_solid_problem(
     prob: ProblemDef,
     v: Variables,
     bcs: Sequence[IBCPatch],
-    *,
-    mode: Literal["forward", "inverse"] = "forward",
 ) -> SolidProblem:
-    match mode:
+    match prob.get("mode") or "forward":
         case "forward":
             mp = create_solid_mechanics_problem(f"Solid{v.U}", "QUASI_STATIC", v.Xi, v.U, pres=v.P)
         case "inverse":
-            mp = create_solid_mechanics_problem(f"Solid{v.U}", "QUASI_STATIC", v.Xt, v.U, pres=v.P)
+            mp = create_solid_mechanics_problem(f"Solid{v.U}", "QUASI_STATIC", v.X0, v.U, pres=v.P)
             mp.set_flags("Inverse-mechanics")
     matlaws = [create_matlaw(m) for m in prob["models"]]
     mp.add_matlaw(*matlaws)

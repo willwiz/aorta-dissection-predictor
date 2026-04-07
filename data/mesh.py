@@ -64,7 +64,6 @@ DEFORMED_CYLINDER: MeshDef = {
         "C": "C-t.D",
         "R": "R-t.D",
     },
-    "space": "X-t.D",
 }
 
 PILOT_CYLINDER: MeshDef = {
