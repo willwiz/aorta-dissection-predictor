@@ -24,7 +24,7 @@ def create_cylinder_topologies(mesh: MeshDef) -> TopologyMap[TopologyType]:
     interface = create_top_interface("OneToOne", [*tops.values()])
     left = create_topology(
         f"{tops['Disp']}Left",
-        basis=create_boundary_basis(basis["disp"]),
+        basis=create_boundary_basis(basis["Disp"]),
         mesh=mesh["home"] / (mesh["top"]["Disp"]["prefix"] + "_inlet"),
     )
     left.create_in_boundary(tops["Disp"], mesh["bnds"]["Inlet"]["tag"])

@@ -70,9 +70,12 @@ class FieldTags(TypedDict, total=True):
     center: str
     fiber: str
     normal: str
+    Z: str
+    C: str
+    R: str
 
 
-class MeshDef(TypedDict, total=True):
+class MeshDef(TypedDict, total=False):
     """Definition of a mesh.
 
     Parameters
@@ -82,8 +85,9 @@ class MeshDef(TypedDict, total=True):
 
     """
 
-    geo: GeoDef
-    home: Path
-    top: Mapping[_TOPS, TopSpec]
-    fields: FieldTags
-    bnds: Mapping[_BNDS, BndTag]
+    geo: Required[GeoDef]
+    home: Required[Path]
+    top: Required[Mapping[_TOPS, TopSpec]]
+    fields: Required[FieldTags]
+    bnds: Required[Mapping[_BNDS, BndTag]]
+    space: str

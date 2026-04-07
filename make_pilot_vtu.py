@@ -10,7 +10,7 @@ from pytools.parallel import ThreadedRunner
 from pytools.path import expand_as_path
 from pytools.progress import ProgressBar
 
-from data.problems import MAIN_PROBLEMS
+from data.problems import PILOT_PROBLEMS
 
 if TYPE_CHECKING:
     from cheartpy.paraview.types import APIKwargsFind
@@ -64,5 +64,5 @@ def main(prob: ProblemDef, n: int = 1) -> None:
 
 
 if __name__ == "__main__":
-    for p in [p for p_set in MAIN_PROBLEMS.values() for p in p_set]:
+    for p in [p for p_set in PILOT_PROBLEMS.values() for p in p_set]:
         main(p, n=8)

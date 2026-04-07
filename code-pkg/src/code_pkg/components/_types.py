@@ -1,8 +1,7 @@
-from collections.abc import Sequence
 from typing import TYPE_CHECKING, Literal, LiteralString, NamedTuple, Required, TypedDict
 
 if TYPE_CHECKING:
-    from collections.abc import Mapping, ValuesView
+    from collections.abc import Mapping, Sequence, ValuesView
     from pathlib import Path
 
     from cheartpy.fe.trait import ICheartTopology, ITopInterface, IVariable
@@ -46,7 +45,7 @@ class BCDef(TypedDict, total=False):
 class TimeDef(TypedDict, total=False):
     start: int
     end: Required[int]
-    step: Required[int]
+    step: Required[float]
 
 
 class NeoHookeanDef(TypedDict, total=True):
@@ -57,12 +56,34 @@ class NeoHookeanDef(TypedDict, total=True):
 type ModelDef = NeoHookeanDef
 
 
+class ResidualStrainTensorDef(TypedDict, total=True):
+    mode: Literal["tensor"]
+    strain: float
+
+
+class ResidualStrainVectorDef(TypedDict, total=True):
+    mode: Literal["vector"]
+    strain: float
+
+
+class ResidualStrainDeformedVectorDef(TypedDict, total=True):
+    mode: Literal["deformed-vector"]
+    strain: float
+
+
+type ResidualStrainDef = (
+    ResidualStrainTensorDef | ResidualStrainVectorDef | ResidualStrainDeformedVectorDef
+)
+
+
 class ProblemDef(TypedDict, total=False):
+    name: Required[str]
     time: Required[TimeDef]
     mesh: Required[MeshDef]
     mode: Literal["forward", "inverse"]
     models: Required[Sequence[ModelDef]]
     bc: Required[BCDef]
+    res_strain: ResidualStrainDef
     output_dir: Path
 
 

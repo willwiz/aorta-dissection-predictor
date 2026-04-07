@@ -31,8 +31,42 @@ DEFAULT_CYLINDER: MeshDef = {
         "center": "CenterPoint-0.D",
         "fiber": "Fiber-0.D",
         "normal": "Normal-0.D",
+        "Z": "Z-0.D",
+        "C": "C-0.D",
+        "R": "R-0.D",
     },
 }
+
+DEFORMED_CYLINDER: MeshDef = {
+    "geo": {
+        "shape": (1.0, 2.0, 5.0),
+        "size": (3, 16, 50),
+        "orientation": "x",
+        "warp": True,
+    },
+    "home": Path("mesh"),
+    "top": {
+        "Disp": {"prefix": "cyl_quad", "elem": "hex", "order": 2},
+        "Pres": {"prefix": "cyl_lin", "elem": "hex", "order": 1},
+    },
+    "bnds": {
+        "Inlet": {"name": "Inlet", "tag": 1},
+        "Outlet": {"name": "Outlet", "tag": 2},
+        "Inner": {"name": "Inner", "tag": 3},
+        "Outer": {"name": "Outer", "tag": 4},
+    },
+    "fields": {
+        "cl": "CenterLine-0.D",
+        "center": "CenterPoint-0.D",
+        "fiber": "Fiber-0.D",
+        "normal": "Normal-0.D",
+        "Z": "Z-t.D",
+        "C": "C-t.D",
+        "R": "R-t.D",
+    },
+    "space": "X-t.D",
+}
+
 PILOT_CYLINDER: MeshDef = {
     "geo": {
         "shape": (1.0, 2.0, 5.0),
@@ -56,5 +90,8 @@ PILOT_CYLINDER: MeshDef = {
         "center": "CenterPoint-0.D",
         "fiber": "Fiber-0.D",
         "normal": "Normal-0.D",
+        "Z": "Z-0.D",
+        "C": "C-0.D",
+        "R": "R-0.D",
     },
 }
