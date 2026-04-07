@@ -25,22 +25,9 @@ MAIN_PROBLEMS: dict[str, Sequence[ProblemDef]] = {
                 "Inlet": "SLIP",
                 "Outlet": "HOLD",
             },
-            "output_dir": Path("results_forward_old"),
+            "output_dir": Path(f"results_forward_{t}"),
         }
-    ],
-    "correct": [
-        {
-            "time": {"end": 200, "step": 1},
-            "mesh": PILOT_CYLINDER,
-            "mode": "forward",
-            "models": [{"matlaw": "NeoHookean", "k": 100.0}],
-            "bc": {
-                "Pres": {"mode": "linear", "amp": 100.0, "duration": 50},
-                "Inlet": "SLIP",
-                "Outlet": "HOLD",
-            },
-            "output_dir": Path("results_forward_new"),
-        }
+        for t in ["old", "new"]
     ],
     "inverse": [
         {

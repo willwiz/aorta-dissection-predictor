@@ -10,7 +10,7 @@ wheels/
 .venv
 
 # Data Directories
-/mesh
+/mesh*
 /results*
 /test_*
 /*.zip

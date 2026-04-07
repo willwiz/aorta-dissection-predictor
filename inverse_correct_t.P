@@ -49,7 +49,7 @@
 % ----  Variables  -----------------------------------------------------------------------
 !DefVariablePointer={template|TPLin|mesh_bent_cylinder/cyl_lin|3}
 !DefVariablePointer={XInitial|TPQuad|mesh_bent_cylinder/cyl_quad|3}
-!DefVariablePointer={UDef|TPQuad|results_forward/U-200.D|3}
+!DefVariablePointer={UDef|TPQuad|results_forward_new/U-200.D|3}
 
 !DefVariablePointer={Xi|TPQuad|3}
   !SetVariablePointer={Xi|INIT_EXPR|load_xdef}

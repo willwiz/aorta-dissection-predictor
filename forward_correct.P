@@ -65,8 +65,7 @@
 !DefVariablePointer={RLMPU0Inlet|null_topology|1}
 !DefVariablePointer={RLMPU0Outlet|null_topology|3}
 % ----  Export Frequency  ----------------------------------------------------------------
-!SetExportFrequency={X0|Xi|P|U|R|Z|C|F|ResidualValues|ResidualVectors|1}
-!SetExportFrequency={RLMPU0Inlet|RLMPU0Outlet|-1}
+!SetExportFrequency={X0|Xi|P|U|R|Z|C|F|ResidualValues|ResidualVectors|RLMPU0Inlet|RLMPU0Outlet|1}
 % ----  Problem Definitions  -------------------------------------------------------------
 !DefProblem={SolidU0|quasi_static_elasticity}
   !UseVariablePointer={Space|X0}

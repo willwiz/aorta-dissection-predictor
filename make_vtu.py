@@ -41,7 +41,9 @@ def interpolate_vars(prob: ProblemDef, n: int = 1) -> None:
     log.info(f"Interpolation variables for {output_dir}")
     with ThreadedRunner(thread=n, prog_bar=bart) as executor:
         for lin_file, quad_file in var_files.items():
-            executor.submit(interpolate_var_on_lin_topology, l2q_map, lin_file, quad_file)
+            executor.submit(
+                interpolate_var_on_lin_topology, l2q_map, lin_file, quad_file, overwrite=True
+            )
 
 
 def main(prob: ProblemDef, n: int = 1) -> None:
@@ -55,7 +57,7 @@ def main(prob: ProblemDef, n: int = 1) -> None:
         "output_dir": output_dir,
         "var": export_vars,
         "thread": n,
-        "index": (0, 200, 5),
+        "index": (0, 201, 5),
     }
     if prob.get("mode") == "inverse":
         kwargs["space"] = output_dir / "Xi-0.D"
