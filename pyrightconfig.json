@@ -1,6 +1,5 @@
 {
   "include": [
-    "code-pkg",
     "data",
     "./make_*.py",
     "./compute_*.py",

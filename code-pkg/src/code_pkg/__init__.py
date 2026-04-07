@@ -1,2 +1,3 @@
-def hello() -> str:
-    return "Hello from code-pkg!"
+from .pfile import main_pfile
+
+__all__ = ["main_pfile"]

@@ -32,16 +32,10 @@ def create_solid_variables(
     freq: int = 1,
 ) -> Variables:
     x, u, p = pfx or ("X", "U", "P")
-    if space := mesh.get("space"):
-        return Variables(
-            Xi=create_variable(f"{x}i", top["Disp"], 3, data=mesh["home"] / space, freq=freq),
-            Xt=create_variable(f"{x}t", top["Disp"], 3, data=mesh["home"] / space, freq=freq),
-            U=create_variable(f"{u}", top["Disp"], 3, data=mesh["home"] / space, freq=freq),
-            P=create_variable(f"{p}", top["Pres"], 1, data=mesh["home"] / space, freq=freq),
-        )
+    space = mesh["home"] / x0 if (x0 := mesh.get("space")) else top["Disp"].mesh
     return Variables(
-        Xi=create_variable(f"{x}i", top["Disp"], 3, data=top["Disp"].mesh, freq=freq),
-        Xt=create_variable(f"{x}t", top["Disp"], 3, data=top["Disp"].mesh, freq=freq),
+        Xi=create_variable(f"{x}i", top["Disp"], 3, data=space, freq=freq),
+        Xt=create_variable(f"{x}t", top["Disp"], 3, space, freq=freq),
         U=create_variable(f"{u}", top["Disp"], 3, freq=freq),
         P=create_variable(f"{p}", top["Pres"], 1, freq=freq),
     )

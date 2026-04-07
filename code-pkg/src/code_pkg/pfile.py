@@ -11,7 +11,8 @@ from cheartpy.fe.api import (
     create_solver_matrix,
     create_solver_subgroup,
 )
-from code_pkg.components import (
+
+from .components import (
     ProblemDef,
     create_boundary_conditions,
     create_cylinder_topologies,
