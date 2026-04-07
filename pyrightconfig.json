@@ -3,6 +3,7 @@
     "data",
     "./make_*.py",
     "./compute_*.py",
+    "./main.py",
   ],
   "exclude": [
     ".git",
