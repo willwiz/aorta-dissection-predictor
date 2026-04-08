@@ -41,6 +41,7 @@ def main_pfile(p: ProblemDef) -> IPFile:
     stress_matrix = create_stress_calculation(solid_prob)
     strain_matrix = create_strain_calculation(solid_prob)
     sg_solid = create_solver_subgroup("seq_fp_linesearch", solid_matrix)
+    sg_solid.scale_first_residual = 1.0e5
     post_calcs = [stress_matrix, strain_matrix]
     sg_post_calcs = [create_solver_subgroup("SOLVER_SEQUENTIAL", calc) for calc in post_calcs]
     g = create_solver_group("Main", time)

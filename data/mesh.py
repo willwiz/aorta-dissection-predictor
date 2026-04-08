@@ -10,8 +10,8 @@ if TYPE_CHECKING:
 
 DEFAULT_CYLINDER: MeshDef = {
     "geo": {
-        "shape": (1.0, 2.0, 5.0),
-        "size": (3, 16, 50),
+        "shape": (9.0, 12.0, 200.0),
+        "size": (2, 16, 64),
         "orientation": "x",
         "warp": True,
     },

@@ -105,7 +105,7 @@ def _create_residual_strain_vectors(
     res_var_weights = create_variable("ResWeights", top, 3, freq=1)
     res_var_weights.add_setting("TEMPORAL_UPDATE_EXPR", res_weights)
     res_var_vectors = create_variable("ResVectors", top, 9, freq=1)
-    res_var_vectors.add_setting("TEMPORAL_UPDATE_EXPR", res_vectors)
+    res_var_vectors.add_setting("INIT_EXPR", res_vectors)
     return {"ResidualF-weights": res_var_weights, "ResidualF-vectors": res_var_vectors}
 
 

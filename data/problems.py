@@ -30,20 +30,6 @@ MAIN_PROBLEMS: dict[str, Sequence[ProblemDef]] = {
             "res_strain": {"mode": "tensor", "strain": 0.2},
             "output_dir": _RESULTS_ROOT,
         },
-        {
-            "name": "forward_new",
-            "time": {"end": 200, "step": 0.01},
-            "mesh": DEFAULT_CYLINDER,
-            "mode": "forward",
-            "models": [{"matlaw": "NeoHookean", "k": 10.0}],
-            "bc": {
-                "Pres": {"mode": "linear", "amp": 2.1, "duration": 1.0},
-                "Inlet": "SLIP",
-                "Outlet": "HOLD",
-            },
-            "res_strain": {"mode": "vector", "strain": 0.2},
-            "output_dir": _RESULTS_ROOT,
-        },
     ],
     "inverse": [
         {

@@ -8,6 +8,7 @@ from cheartpy.cmd_tools.cli import CheartErrorCode, run_prep, run_problem
 from cheartpy.io.api import chread_d, chwrite_d_utf
 from code_pkg import main_pfile
 from pydantic import BaseModel
+from pytools.logging import get_logger
 from pytools.parallel import ThreadedRunner
 
 from data.problems import MAIN_PROBLEMS
@@ -98,9 +99,9 @@ def run_pfile(prob: ProblemDef, config: Config) -> str:
 
 if __name__ == "__main__":
     config = parse_cmdline_args()
-    with ThreadedRunner(thread=config.parallel) as runner:
-        for p in MAIN_PROBLEMS["forward"]:
-            runner.submit(run_pfile, p, config)
+    logger = get_logger()
+    for p in MAIN_PROBLEMS["forward"]:
+        run_pfile(p, config)
     with ThreadedRunner(thread=config.parallel) as runner:
         for p in MAIN_PROBLEMS["inverse"]:
             runner.submit(run_pfile, p, config)
