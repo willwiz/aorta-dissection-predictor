@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
 
 def interpolate_vars(prob: ProblemDef, n: int = 1) -> None:
-    output_dir = prob.get("output_dir", Path.cwd())
+    output_dir = (prob.get("output_dir") or Path.cwd()) / prob["name"]
     lin_mesh = import_cheart_mesh(
         prob["mesh"]["home"] / prob["mesh"]["top"]["Pres"]["prefix"]
     ).unwrap()
@@ -47,7 +47,9 @@ def interpolate_vars(prob: ProblemDef, n: int = 1) -> None:
 
 
 def main(prob: ProblemDef, n: int = 1) -> None:
-    output_dir = prob.get("output_dir", Path.cwd())
+    log = get_logger()
+    output_dir = (prob.get("output_dir") or Path.cwd()) / prob["name"]
+    log.info(f"Interpolating variables for {prob['name']} in {output_dir}")
     interpolate_vars(prob, n)
     mesh = prob["mesh"]
     export_vars = ["U", "Pres"]

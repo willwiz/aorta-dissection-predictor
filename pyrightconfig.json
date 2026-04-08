@@ -1,10 +1,10 @@
 {
   "include": [
-    "./data",
-    "./make_*.py",
-    "./compute_*.py",
-    "./main.py",
-    "./code-pkg"
+    "data",
+    "make_*.py",
+    "compute_*.py",
+    "main.py",
+    "code-pkg"
   ],
   "exclude": [
     ".git",
