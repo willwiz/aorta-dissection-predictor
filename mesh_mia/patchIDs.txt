@@ -1,0 +1,7 @@
+1= outer wall
+2= inflow face (AV)
+3= inner wall
+4= distal outflow face
+5=3rd branch from AV
+6=2nd branch from AV
+7=1st branch from AV

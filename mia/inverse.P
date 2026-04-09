@@ -1,0 +1,66 @@
+#strain = 0.2
+% ----------------------------------------------------------------------------------------
+% message
+% ----------------------------------------------------------------------------------------
+% ----  New Output Path  -----------------------------------------------------------------
+!SetOutputPath={results_mia_inverse}
+% ----  Define Time Scheme  --------------------------------------------------------------
+!DefTimeStepScheme={time}
+  1  100  0.01
+% ----  Solver Groups  -------------------------------------------------------------------
+!DefSolverGroup={Main|time}
+  !SetSolverGroup={Main|export_initial_condition}
+  !SetSolverGroup={Main|L2TOL|1e-09}
+!DefSolverSubGroup={Main|seq_fp_linesearch|SolidMatrix|ScaleFirstResidual[100000.0]}
+% ----  Solver Matrices  -----------------------------------------------------------------
+!DefSolverMatrix={SolidMatrix|SOLVER_MUMPS|SolidU0}
+  !SetSolverMatrix={SolidMatrix|SuppressOutput}
+  !SetSolverMatrix={SolidMatrix|ordering|parallel}
+  !SetSolverMatrix={SolidMatrix|SolverMatrixCalculation|evaluate_every_build}
+
+% ----  Basis Functions  -----------------------------------------------------------------
+!UseBasis={QTet|TETRAHEDRAL_ELEMENT|NL2|KEAST_LYNESS4}
+!UseBasis={QTri|TRIANGLE_ELEMENT|NL2|KEAST_LYNESS4}
+!UseBasis={LTet|TETRAHEDRAL_ELEMENT|NL1|KEAST_LYNESS4}
+!UseBasis={LTri|TRIANGLE_ELEMENT|NL1|KEAST_LYNESS4}
+!UseBasis={ZQuad|TRIANGLE_ELEMENT|NL0|KEAST_LYNESS4}
+% ----  Topologies  ----------------------------------------------------------------------
+!DefTopology={TPQuad|mesh_mia/model_quad|QTet}
+!DefTopology={TPLin|mesh_mia/model|LTet}
+!DefTopology={TPInlet|mesh_mia/model_inlet|LTri}
+  !SetTopology={TPInlet|CreateInBoundary|[TPQuad;1]}
+!DefTopology={TPOutlet|mesh_mia/model_outlet|LTri}
+  !SetTopology={TPOutlet|CreateInBoundary|[TPQuad;2]}
+!DefInterface={OneToOne|TPLin|TPQuad}
+!DefInterface={ManyToOne|TPInlet|TPLin|mesh_mia/interface-inlet.IN|NestedInBndry[1]}
+!DefInterface={ManyToOne|TPOutlet|TPLin|mesh_mia/interface-outlet.IN|NestedInBndry[2]}
+% ----  Variables  -----------------------------------------------------------------------
+!DefVariablePointer={Xi|TPLin|mesh_mia/model|3}
+!DefVariablePointer={X0|TPLin|mesh_mia/model|3}
+!DefVariablePointer={U|TPLin|3}
+!DefVariablePointer={F|TPLin|9}
+!DefVariablePointer={P|TPLin|1}
+!DefVariablePointer={ResF|TPLin|9}
+% ----  Export Frequency  ----------------------------------------------------------------
+!SetExportFrequency={X0|Xi|P|U|F|1}
+% ----  Problem Definitions  -------------------------------------------------------------
+!DefProblem={SolidU0|quasi_static_elasticity}
+  !UseVariablePointer={Space|X0}
+  !UseVariablePointer={Displacement|U}
+  !UseVariablePointer={Pressure|P}
+  !Inverse-mechanics
+  !Density={1e-06}
+  !ConstitutiveLaw={neohookean}
+    150.0
+  !Nearly-incompressible
+    1500.0  1500.0
+  !Boundary-patch-definitions
+    3  U  scaled_normal  pressure_curve
+    2  U  dirichlet  0 0 0
+    4  U  dirichlet  0 0 0
+    5  U  dirichlet  0 0 0
+    6  U  dirichlet  0 0 0
+    7  U  dirichlet  0 0 0
+
+!DefExpression={pressure_curve}
+  -11.0 * min(1.0*(t - 0.0), 1) * (t > 0.0)
