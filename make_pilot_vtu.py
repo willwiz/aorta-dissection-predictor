@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from cheartpy.mesh import import_cheart_mesh
-from cheartpy.mesh_tools.interpolation import interpolate_var_on_lin_topology, make_l2qmap
+from cheartpy.mesh_tools.interpolation import export_quad_var_from_lin, make_l2qmap
 from cheartpy.paraview.api import cheart2vtu_find
 from cheartpy.search.api import get_var_index
 from pytools.logging import get_logger
@@ -41,9 +41,7 @@ def interpolate_vars(prob: ProblemDef, n: int = 1) -> None:
     log.info(f"Interpolation variables for {output_dir}")
     with ThreadedRunner(thread=n, prog_bar=bart) as executor:
         for lin_file, quad_file in var_files.items():
-            executor.submit(
-                interpolate_var_on_lin_topology, l2q_map, lin_file, quad_file, overwrite=True
-            )
+            executor.submit(export_quad_var_from_lin, l2q_map, lin_file, quad_file, overwrite=True)
 
 
 def main(prob: ProblemDef, n: int = 1) -> None:

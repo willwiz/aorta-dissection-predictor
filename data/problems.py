@@ -14,6 +14,21 @@ if TYPE_CHECKING:
 
 _RESULTS_ROOT = Path("results")
 
+RELEASE_PROBLEM: ProblemDef = {
+    "name": "release",
+    "time": {"end": 300, "step": 0.01},
+    "mesh": DEFAULT_CYLINDER,
+    "mode": "forward",
+    "models": [{"matlaw": "NeoHookean", "k": 10.0}],
+    "bc": {
+        "Pres": {"mode": "linear", "amp": 2.1, "duration": 1.0},
+        "Inlet": "SLIP",
+        "Outlet": "HOLD",
+    },
+    "res_strain": {"mode": "tensor", "strain": 0.2},
+    "output_dir": Path("results_release"),
+}
+
 MAIN_PROBLEMS: dict[str, Sequence[ProblemDef]] = {
     "forward": [
         {
