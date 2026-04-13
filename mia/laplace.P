@@ -1,0 +1,88 @@
+#strain = 0.2
+% ----------------------------------------------------------------------------------------
+% message
+% ----------------------------------------------------------------------------------------
+% ----  New Output Path  -----------------------------------------------------------------
+!SetOutputPath={results_mia_fibers}
+% ----  Define Time Scheme  --------------------------------------------------------------
+!DefTimeStepScheme={time}
+  1  1  1
+% ----  Solver Groups  -------------------------------------------------------------------
+!DefSolverGroup={Main|time}
+  !SetSolverGroup={Main|AddVariables}
+  !SetSolverGroup={Main|L2TOL|1e-09}
+!DefSolverSubGroup={Main|seq_fp_linesearch|UACMatrixR|ScaleFirstResidual[100000.0]}
+!DefSolverSubGroup={Main|seq_fp_linesearch|UACMatrixZ|ScaleFirstResidual[100000.0]}
+!DefSolverSubGroup={Main|solver_sequential|VectorMatrixR}
+!DefSolverSubGroup={Main|solver_sequential|VectorMatrixZ}
+% ----  Solver Matrices  -----------------------------------------------------------------
+!DefSolverMatrix={UACMatrixR|SOLVER_MUMPS|UAC_R}
+  !SetSolverMatrix={UACMatrixR|SuppressOutput}
+  !SetSolverMatrix={UACMatrixR|ordering|parallel}
+  !SetSolverMatrix={UACMatrixR|SolverMatrixCalculation|evaluate_every_build}
+!DefSolverMatrix={UACMatrixZ|SOLVER_MUMPS|UAC_Z}
+  !SetSolverMatrix={UACMatrixZ|SuppressOutput}
+  !SetSolverMatrix={UACMatrixZ|ordering|parallel}
+  !SetSolverMatrix={UACMatrixZ|SolverMatrixCalculation|evaluate_every_build}
+!DefSolverMatrix={VectorMatrixR|SOLVER_MUMPS|FCalcOrientationR}
+  !SetSolverMatrix={VectorMatrixR|SuppressOutput}
+  !SetSolverMatrix={VectorMatrixR|ordering|parallel}
+  !SetSolverMatrix={VectorMatrixR|SolverMatrixCalculation|evaluate_every_build}
+!DefSolverMatrix={VectorMatrixZ|SOLVER_MUMPS|FCalcOrientationZ}
+  !SetSolverMatrix={VectorMatrixZ|SuppressOutput}
+  !SetSolverMatrix={VectorMatrixZ|ordering|parallel}
+  !SetSolverMatrix={VectorMatrixZ|SolverMatrixCalculation|evaluate_every_build}
+
+% ----  Basis Functions  -----------------------------------------------------------------
+!UseBasis={QTet|TETRAHEDRAL_ELEMENT|NL2|KEAST_LYNESS4}
+!UseBasis={QTri|TRIANGLE_ELEMENT|NL2|KEAST_LYNESS4}
+!UseBasis={LTet|TETRAHEDRAL_ELEMENT|NL1|KEAST_LYNESS4}
+!UseBasis={LTri|TRIANGLE_ELEMENT|NL1|KEAST_LYNESS4}
+!UseBasis={ZQuad|TRIANGLE_ELEMENT|NL0|KEAST_LYNESS4}
+% ----  Topologies  ----------------------------------------------------------------------
+!DefTopology={TPLin|mesh_mia/model|LTet}
+% ----  Variables  -----------------------------------------------------------------------
+!DefVariablePointer={X0|TPLin|mesh_mia/model|3}
+!DefVariablePointer={Ar|TPLin|1}
+!DefVariablePointer={VectorR|TPLin|3}
+!DefVariablePointer={Az|TPLin|1}
+!DefVariablePointer={VectorZ|TPLin|3}
+
+% ----  Export Frequency  ----------------------------------------------------------------
+!SetExportFrequency={X0|-1}
+!SetExportFrequency={Ar|Az|VectorR|VectorZ|1}
+
+% ----  Problem Definitions  -------------------------------------------------------------
+!DefProblem={UAC_R|LAPLACE_PROBLEM}
+  !UseVariablePointer={Space|X0}
+  !UseVariablePointer={Variable|Ar}
+  !Boundary-patch-definitions
+    3  Ar  dirichlet  0
+    1  Ar  dirichlet  1
+
+
+!DefProblem={UAC_Z|LAPLACE_PROBLEM}
+  !UseVariablePointer={Space|X0}
+  !UseVariablePointer={Variable|Az}
+  !Boundary-patch-definitions
+    2  Az  dirichlet  0
+    4  Az  dirichlet  1
+    5  Az  dirichlet  0.36
+    6  Az  dirichlet  0.35
+    7  Az  dirichlet  0.34
+
+
+!DefProblem={FCalcOrientationR|l2varprojection_problem}
+  !UseVariablePointer={Space|X0}
+  !UseVariablePointer={RHS|Ar}
+  !UseVariablePointer={Variable|VectorR}
+  !Projected-Variable={gradient}
+  !Boundary-conditions-not-required
+
+
+!DefProblem={FCalcOrientationZ|l2varprojection_problem}
+  !UseVariablePointer={Space|X0}
+  !UseVariablePointer={RHS|Az}
+  !UseVariablePointer={Variable|VectorZ}
+  !Projected-Variable={gradient}
+  !Boundary-conditions-not-required

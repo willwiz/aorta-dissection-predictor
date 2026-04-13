@@ -1,20 +1,22 @@
 #strain = 0.2
+#traction_release_factor=0.99
 % ----------------------------------------------------------------------------------------
 % message
 % ----------------------------------------------------------------------------------------
 % ----  New Output Path  -----------------------------------------------------------------
-!SetOutputPath={results_mia_vectors}
+!SetOutputPath={results_mia_release}
 % ----  Define Time Scheme  --------------------------------------------------------------
 !DefTimeStepScheme={time}
-  1  200  0.01
+  1  200  mesh_mia/time.step
 % ----  Solver Groups  -------------------------------------------------------------------
 !DefSolverGroup={Main|time}
   !SetSolverGroup={Main|AddVariables|ResidualWeights|ResidualVectors}
   !SetSolverGroup={Main|export_initial_condition}
   !SetSolverGroup={Main|L2TOL|1e-09}
+  !SetSolverGroup={Main|CATCH_DT_CHANGES}
 !DefSolverSubGroup={Main|seq_fp_linesearch|SolidMatrix|ScaleFirstResidual[100000.0]}
 % ----  Solver Matrices  -----------------------------------------------------------------
-!DefSolverMatrix={SolidMatrix|SOLVER_MUMPS|SolidU0}
+!DefSolverMatrix={SolidMatrix|SOLVER_MUMPS|SolidU0|PTranslationInlet|PTranslationOutlet}
   !SetSolverMatrix={SolidMatrix|SuppressOutput}
   !SetSolverMatrix={SolidMatrix|ordering|parallel}
   !SetSolverMatrix={SolidMatrix|SolverMatrixCalculation|evaluate_every_build}
@@ -29,16 +31,16 @@
 !DefTopology={TPQuad|mesh_mia/model_quad|QTet}
 !DefTopology={TPLin|mesh_mia/model|LTet}
 !DefTopology={TPInlet|mesh_mia/model_inlet|LTri}
-  !SetTopology={TPInlet|CreateInBoundary|[TPQuad;1]}
+  !SetTopology={TPInlet|CreateInBoundary|[TPQuad;2]}
 !DefTopology={TPOutlet|mesh_mia/model_outlet|LTri}
-  !SetTopology={TPOutlet|CreateInBoundary|[TPQuad;2]}
+  !SetTopology={TPOutlet|CreateInBoundary|[TPQuad;4]}
 !DefInterface={OneToOne|TPLin|TPQuad}
-!DefInterface={ManyToOne|TPInlet|TPLin|mesh_mia/interface-inlet.IN|NestedInBndry[1]}
-!DefInterface={ManyToOne|TPOutlet|TPLin|mesh_mia/interface-outlet.IN|NestedInBndry[2]}
+!DefInterface={ManyToOne|TPInlet|TPLin|mesh_mia/interface-inlet.IN|NestedInBndry[2]}
+!DefInterface={ManyToOne|TPOutlet|TPLin|mesh_mia/interface-outlet.IN|NestedInBndry[4]}
 % ----  Variables  -----------------------------------------------------------------------
-!DefVariablePointer={Xi|TPQuad|mesh_mia/model_quad|3}
-!DefVariablePointer={X0|TPQuad|mesh_mia/model_quad|3}
-!DefVariablePointer={U|TPQuad|3}
+!DefVariablePointer={Xi|TPLin|mesh_mia/model|3}
+!DefVariablePointer={X0|TPLin|mesh_mia/model|3}
+!DefVariablePointer={U|TPLin|3}
 !DefVariablePointer={P|TPLin|1}
 !DefVariablePointer={R|TPLin|mesh_mia/R-0.D|3}
 !DefVariablePointer={Z|TPLin|mesh_mia/Z-0.D|3}
@@ -49,7 +51,12 @@
   !SetVariablePointer={ResidualVectors|INIT_EXPR|residual_vectors}
 !DefVariablePointer={ResidualDeformation|TPLin|9}
   !SetVariablePointer={ResidualDeformation|TEMPORAL_UPDATE_EXPR|residual_deformation}
-
+!DefVariablePointer={TLMInlet|TPInlet|3}
+!DefVariablePointer={TLMInletPrev|TPInlet|3}
+  !SetVariablePointer={TLMInletPrev|TEMPORAL_UPDATE_EXPR|t_lm_inlet}
+!DefVariablePointer={TLMOutlet|TPOutlet|3}
+!DefVariablePointer={TLMOutletPrev|TPOutlet|3}
+  !SetVariablePointer={TLMOutletPrev|TEMPORAL_UPDATE_EXPR|t_lm_outlet}
 % ----  Export Frequency  ----------------------------------------------------------------
 !SetExportFrequency={X0|Xi|P|U|ResidualWeights|1}
 !SetExportFrequency={ResidualVectors|-1}
@@ -58,25 +65,53 @@
   !UseVariablePointer={Space|X0}
   !UseVariablePointer={Displacement|U}
   !UseVariablePointer={Pressure|P}
-  !UseVariablePointer={ResidualF-weights|ResidualWeights}
-  !UseVariablePointer={ResidualF-vectors|ResidualVectors}  
+  !UseVariablePointer={ResidualF|ResidualDeformation}
   !Density={1e-06}
   !ConstitutiveLaw={neohookean}
     150.0
   !Nearly-incompressible
     1500.0  1500.0
   !Boundary-patch-definitions
-    3  U  scaled_normal  pressure_curve
-    2  U  dirichlet  0 0 0
-    4  U  dirichlet  0 0 0
     5  U  dirichlet  0 0 0
     6  U  dirichlet  0 0 0
     7  U  dirichlet  0 0 0
 
+!DefProblem={PTranslationInlet|fscoupling_problem}
+  !UseVariablePointer={Space|Xi}
+  !Addterms={TestVariable[U]|TLMInlet}
+  !Addterms={TestVariable[TLMInlet*]|U[release_switch_u]|TLMInlet[release_switch_t]|TLMInletPrev[release_switch_t_prev]}
+  !SetPerturbationBuild
+  !SetRootTopology={TPInlet}
+  !Boundary-conditions-not-required
 
 
-!DefExpression={pressure_curve}
-  -16.0 * min(1.0*(t - 1.0), 1) * (t > 1.0)
+!DefProblem={PTranslationOutlet|fscoupling_problem}
+  !UseVariablePointer={Space|Xi}
+  !Addterms={TestVariable[U]|TLMOutlet}
+  !Addterms={TestVariable[TLMOutlet*]|U[release_switch_u]|TLMOutlet[release_switch_t]|TLMOutletPrev[release_switch_t_prev]}
+  !SetPerturbationBuild
+  !SetRootTopology={TPOutlet}
+  !Boundary-conditions-not-required
+
+!DefExpression={t_lm_inlet}
+  #traction_release_factor * TLMInlet.1
+  #traction_release_factor * TLMInlet.2
+  #traction_release_factor * TLMInlet.3
+
+!DefExpression={t_lm_outlet}
+  #traction_release_factor * TLMOutlet.1
+  #traction_release_factor * TLMOutlet.2
+  #traction_release_factor * TLMOutlet.3
+
+!DefExpression={release_switch_u}
+  t <= 1.0
+
+!DefExpression={release_switch_t}
+  1e-3 * (1.0 - release_switch_u)
+
+!DefExpression={release_switch_t_prev}
+  - release_switch_t
+
 
 !DefExpression={axial_stretch}
   1.0 + #strain * min(t, 1.0)

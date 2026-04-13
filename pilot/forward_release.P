@@ -1,0 +1,176 @@
+#strain = 0.2
+#traction_release_factor=0.999
+% ----------------------------------------------------------------------------------------
+% message
+% ----------------------------------------------------------------------------------------
+% ----  New Output Path  -----------------------------------------------------------------
+!SetOutputPath={results_forward_release}
+% ----  Define Time Scheme  --------------------------------------------------------------
+!DefTimeStepScheme={time}
+  1  1000  0.01
+% ----  Solver Groups  -------------------------------------------------------------------
+!DefSolverGroup={Main|time}
+  !SetSolverGroup={Main|AddVariables}
+  !SetSolverGroup={Main|export_initial_condition}
+  !SetSolverGroup={Main|L2TOL|1e-09}
+  !SetSolverGroup={Main|CATCH_RESIDUAL_NAN}
+  !SetSolverGroup={Main|RebuildSeverity|TIMESTEP}
+!DefSolverSubGroup={Main|seq_fp_linesearch|SolidMatrix|ScaleFirstResidual[100000.0]}
+% ----  Solver Matrices  -----------------------------------------------------------------
+!DefSolverMatrix={SolidMatrix|SOLVER_MUMPS}
+    PSolid
+    PTranslationOutlet
+  !SetSolverMatrix={SolidMatrix|SuppressOutput}
+  !SetSolverMatrix={SolidMatrix|ordering|parallel}
+  !SetSolverMatrix={SolidMatrix|SolverMatrixCalculation|evaluate_every_build}
+% ----  Basis Functions  -----------------------------------------------------------------
+!UseBasis={QHex|HEXAHEDRAL_ELEMENT|NL2|GAUSS_LEGENDRE9}
+!UseBasis={QQuad|QUADRILATERAL_ELEMENT|NL2|GAUSS_LEGENDRE9}
+!UseBasis={LHex|HEXAHEDRAL_ELEMENT|NL1|GAUSS_LEGENDRE9}
+!UseBasis={ZQuad|QUADRILATERAL_ELEMENT|NL0|GAUSS_LEGENDRE9}
+% ----  Topologies  ----------------------------------------------------------------------
+!DefTopology={TPQuad|mesh_straight/cyl_quad|QHex}
+!DefTopology={TPLin|mesh_straight/cyl_lin|LHex}
+!DefTopology={TPSurfinner|mesh_straight/cyl_quad_inner|QQuad}
+  !SetTopology={TPSurfinner|CreateInBoundary|[TPQuad;3]}
+!DefTopology={TPSurfouter|mesh_straight/cyl_quad_outer|QQuad}
+  !SetTopology={TPSurfouter|CreateInBoundary|[TPQuad;4]}
+!DefTopology={TPSurfinlet|mesh_straight/cyl_quad_inlet|QQuad}
+  !SetTopology={TPSurfinlet|CreateInBoundary|[TPQuad;1]}
+!DefTopology={TPSurfoutlet|mesh_straight/cyl_quad_outlet|QQuad}
+  !SetTopology={TPSurfoutlet|CreateInBoundary|[TPQuad;2]}
+!DefInterface={OneToOne|TPLin|TPQuad}
+!DefInterface={ManyToOne|TPSurfinlet|TPQuad|mesh_straight/interface-inlet.IN|NestedInBndry[1]}
+!DefInterface={ManyToOne|TPSurfoutlet|TPQuad|mesh_straight/interface-outlet.IN|NestedInBndry[2]}
+% ----  Variables  -----------------------------------------------------------------------
+!DefVariablePointer={template|TPLin|mesh_straight/cyl_lin|3}
+!DefVariablePointer={Xi|TPQuad|mesh_straight/cyl_quad|3}
+!DefVariablePointer={X0|TPQuad|mesh_straight/cyl_quad|3}
+!DefVariablePointer={U|TPQuad|3}
+
+!DefVariablePointer={P|TPLin|1}
+!DefVariablePointer={ResF|TPQuad|9}
+  !SetVariablePointer={ResF|TEMPORAL_UPDATE_EXPR|residual_stretch}
+!DefVariablePointer={ResidualValues|TPQuad|3}
+  !SetVariablePointer={ResidualValues|TEMPORAL_UPDATE_EXPR|residual_weights}
+!DefVariablePointer={ResidualVectors|TPQuad|9}
+  !SetVariablePointer={ResidualVectors|INIT_EXPR|residual_vectors}
+!DefVariablePointer={RLMInlet|null_topology|3}
+!DefVariablePointer={TLMOutlet|TPSurfoutlet|3}
+!DefVariablePointer={TLMOutletPrev|TPSurfoutlet|3}
+  !SetVariablePointer={TLMOutletPrev|TEMPORAL_UPDATE_EXPR|t_lm_outlet}
+% ----  Export Frequency  ----------------------------------------------------------------
+!SetExportFrequency={X0|Xi|P|U|RLMInlet|TLMOutlet|TLMOutletPrev|1}
+% ----  Problem Definitions  -------------------------------------------------------------
+!DefProblem={PSolid|quasi_static_elasticity}
+  !UseVariablePointer={Space|X0}
+  !UseVariablePointer={Displacement|U}
+  !UseVariablePointer={Pressure|P}
+  !UseVariablePointer={ResidualF-weights|ResidualValues}
+  !UseVariablePointer={ResidualF-vectors|ResidualVectors}
+  !Density={1e-06}
+  !ConstitutiveLaw={neohookean}
+    10.0
+  !Boundary-patch-definitions
+    1  U  dirichlet  0 0 0
+
+!DefProblem={PRotationInlet|fscoupling_problem}
+  !UseVariablePointer={Space|Xi}
+  !Addterms={TestVariable[U]|RLMInlet[PBRotPU0Inlet_Mexpr]}
+  !Addterms={TestVariable[RLMInlet*]|U[PBRotPU0Inlet_Mexp_T]}
+  !SetPerturbationBuild
+  !SetRootTopology={TPSurfinlet}
+  !Boundary-conditions-not-required
+
+!DefProblem={PTranslationOutlet|fscoupling_problem}
+  !UseVariablePointer={Space|Xi}
+  !Addterms={TestVariable[U]|TLMOutlet}
+  !Addterms={TestVariable[TLMOutlet*]|U[release_switch_u]|TLMOutlet[release_switch_traction]|TLMOutletPrev[release_switch_traction_prev]}
+  !SetPerturbationBuild
+  !SetRootTopology={TPSurfoutlet}
+  !Boundary-conditions-not-required
+
+!DefExpression={t_lm_outlet}
+  #traction_release_factor * TLMOutlet.1
+  #traction_release_factor * TLMOutlet.2
+  #traction_release_factor * TLMOutlet.3
+
+!DefExpression={release_switch_u}
+  t <= 1.0
+
+!DefExpression={release_switch_traction}
+  1e-3 * (1.0 - release_switch_u)
+
+!DefExpression={release_switch_traction_prev}
+  - release_switch_traction
+
+!DefExpression={axial_stretch}
+  1.0 + #strain * min(t, 1.0)
+
+!DefExpression={offaxial_compress}
+  1.0 / sqrt(axial_stretch)
+
+
+!DefExpression={residual_weights}
+  axial_stretch
+  offaxial_compress
+  offaxial_compress
+
+!DefExpression={residual_vectors}
+  1
+  0
+  0
+  0
+  1
+  0
+  0
+  0
+  1
+
+!DefExpression={pressure_curve}
+  -2.1*min(1.0*(t - 1.0), 1) * (t > 1.0)
+
+!DefExpression={PBRotPU0Inlet_Mexpr}
+  0
+  1
+  0
+  0
+  0
+  1
+  0
+  X0.3
+  -X0.2
+
+!DefExpression={PBRotPU0Inlet_Mexp_T}
+  0
+  0
+  0
+  1
+  0
+  X0.3
+  0
+  1
+  -X0.2
+
+!DefExpression={PBRotPU0Outlet_Mexpr}
+  1
+  0
+  0
+  0
+  1
+  0
+  X0.2
+  -X0.1
+  0
+
+!DefExpression={PBRotPU0Outlet_Mexpr_T}
+  1
+  0
+  X0.2
+  0
+  1
+  -X0.1
+  0
+  0
+  0
+
