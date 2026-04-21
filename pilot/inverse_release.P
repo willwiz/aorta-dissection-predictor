@@ -7,7 +7,7 @@
 !SetOutputPath={results_release}
 % ----  Define Time Scheme  --------------------------------------------------------------
 !DefTimeStepScheme={time}
-  1  300  0.01
+  1  200  0.01
 % ----  Solver Groups  -------------------------------------------------------------------
 !DefSolverGroup={Main|time}
   !SetSolverGroup={Main|AddVariables|C|R|Z|ResidualValues|ResidualVectors}
@@ -30,22 +30,22 @@
 !UseBasis={LHex|HEXAHEDRAL_ELEMENT|NL1|GAUSS_LEGENDRE9}
 !UseBasis={ZQuad|QUADRILATERAL_ELEMENT|NL0|GAUSS_LEGENDRE9}
 % ----  Topologies  ----------------------------------------------------------------------
-!DefTopology={TPQuad|mesh_bent_cylinder/cyl_quad|QHex}
-!DefTopology={TPLin|mesh_bent_cylinder/cyl_lin|LHex}
-!DefTopology={TPSurfinner|mesh_bent_cylinder/cyl_quad_inner|QQuad}
+!DefTopology={TPQuad|mesh_straight/cyl_quad|QHex}
+!DefTopology={TPLin|mesh_straight/cyl_lin|LHex}
+!DefTopology={TPSurfinner|mesh_straight/cyl_quad_inner|QQuad}
   !SetTopology={TPSurfinner|CreateInBoundary|[TPQuad;3]}
-!DefTopology={TPSurfouter|mesh_bent_cylinder/cyl_quad_outer|QQuad}
+!DefTopology={TPSurfouter|mesh_straight/cyl_quad_outer|QQuad}
   !SetTopology={TPSurfouter|CreateInBoundary|[TPQuad;4]}
-!DefTopology={TPSurfinlet|mesh_bent_cylinder/cyl_quad_inlet|QQuad}
+!DefTopology={TPSurfinlet|mesh_straight/cyl_quad_inlet|QQuad}
   !SetTopology={TPSurfinlet|CreateInBoundary|[TPQuad;1]}
-!DefTopology={TPSurfoutlet|mesh_bent_cylinder/cyl_quad_outlet|QQuad}
+!DefTopology={TPSurfoutlet|mesh_straight/cyl_quad_outlet|QQuad}
   !SetTopology={TPSurfoutlet|CreateInBoundary|[TPQuad;2]}
 !DefInterface={OneToOne|TPLin|TPQuad}
-!DefInterface={ManyToOne|TPSurfinlet|TPQuad|mesh_bent_cylinder/interface-inlet.IN|NestedInBndry[1]}
-!DefInterface={ManyToOne|TPSurfoutlet|TPQuad|mesh_bent_cylinder/interface-outlet.IN|NestedInBndry[2]}
+!DefInterface={ManyToOne|TPSurfinlet|TPQuad|mesh_straight/interface-inlet.IN|NestedInBndry[1]}
+!DefInterface={ManyToOne|TPSurfoutlet|TPQuad|mesh_straight/interface-outlet.IN|NestedInBndry[2]}
 % ----  Variables  -----------------------------------------------------------------------
-!DefVariablePointer={template|TPLin|mesh_bent_cylinder/cyl_lin|3}
-!DefVariablePointer={XInitial|TPQuad|mesh_bent_cylinder/cyl_quad|3}
+!DefVariablePointer={template|TPLin|mesh_straight/cyl_lin|3}
+!DefVariablePointer={XInitial|TPQuad|mesh_straight/cyl_quad|3}
 !DefVariablePointer={UDef|TPQuad|results_forward_new/U-200.D|3}
 
 !DefVariablePointer={Xi|TPQuad|3}
@@ -53,9 +53,9 @@
 !DefVariablePointer={X0|TPQuad|3}
   !SetVariablePointer={X0|INIT_EXPR|load_xdef}
 !DefVariablePointer={U|TPQuad|3}
-!DefVariablePointer={R|TPQuad|mesh_bent_cylinder/R-t.D|3}
-!DefVariablePointer={Z|TPQuad|mesh_bent_cylinder/Z-t.D|3}
-!DefVariablePointer={C|TPQuad|mesh_bent_cylinder/C-t.D|3}
+!DefVariablePointer={R|TPQuad|mesh_straight/R-0.D|3}
+!DefVariablePointer={Z|TPQuad|mesh_straight/Z-0.D|3}
+!DefVariablePointer={C|TPQuad|mesh_straight/C-0.D|3}
 !DefVariablePointer={P|TPLin|1}
 !DefVariablePointer={ResF|TPQuad|9}
   !SetVariablePointer={ResF|TEMPORAL_UPDATE_EXPR|residual_stretch}

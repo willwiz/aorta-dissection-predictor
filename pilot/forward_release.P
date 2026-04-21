@@ -4,13 +4,13 @@
 % message
 % ----------------------------------------------------------------------------------------
 % ----  New Output Path  -----------------------------------------------------------------
-!SetOutputPath={results_forward_release}
+!SetOutputPath={results_release}
 % ----  Define Time Scheme  --------------------------------------------------------------
 !DefTimeStepScheme={time}
-  1  1000  0.01
+  201  300  0.01
 % ----  Solver Groups  -------------------------------------------------------------------
 !DefSolverGroup={Main|time}
-  !SetSolverGroup={Main|AddVariables}
+  !SetSolverGroup={Main|AddVariables|C|R|Z|ResidualValues|ResidualVectors}
   !SetSolverGroup={Main|export_initial_condition}
   !SetSolverGroup={Main|L2TOL|1e-09}
   !SetSolverGroup={Main|CATCH_RESIDUAL_NAN}
@@ -19,6 +19,7 @@
 % ----  Solver Matrices  -----------------------------------------------------------------
 !DefSolverMatrix={SolidMatrix|SOLVER_MUMPS}
     PSolid
+    PRotationInlet
     PTranslationOutlet
   !SetSolverMatrix={SolidMatrix|SuppressOutput}
   !SetSolverMatrix={SolidMatrix|ordering|parallel}
