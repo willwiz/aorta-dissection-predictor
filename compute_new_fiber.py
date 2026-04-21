@@ -19,10 +19,11 @@ def normalize_by_row[F: np.floating](vals: A2[F]) -> A2[F]:
 
 
 def main() -> None:
-    c = chread_d(Path() / "mesh_bent_cylinder" / "C-0.D")
-    r = chread_d(Path() / "mesh_bent_cylinder" / "R-0.D")
-    z = chread_d(Path() / "mesh_bent_cylinder" / "Z-0.D")
-    f = chread_d(Path() / "results_forward_new" / "F-200.D")
+    mesh = Path("mesh_mia")
+    c = chread_d(mesh / "C-0.D")
+    r = chread_d(mesh / "R-0.D")
+    z = chread_d(mesh / "Z-0.D")
+    f = chread_d(Path() / "results_release_mia_forward" / "F-100.D")
     f = f.reshape((-1, 3, 3))
     # f_invt = np.einsum("ijk->ikj", np.linalg.inv(f))
     # f_invt = np.linalg.inv(f)
@@ -56,9 +57,9 @@ def main() -> None:
     # chwrite_d_utf(Path() / "mesh_bent_cylinder" / "Ct-0.D", new_c)
     # chwrite_d_utf(Path() / "mesh_bent_cylinder" / "Rt-0.D", new_r)
     # chwrite_d_utf(Path() / "mesh_bent_cylinder" / "Zt-0.D", new_z)
-    chwrite_d_utf(Path() / "mesh_bent_cylinder" / "C-t.D", new_c)
-    chwrite_d_utf(Path() / "mesh_bent_cylinder" / "R-t.D", new_r)
-    chwrite_d_utf(Path() / "mesh_bent_cylinder" / "Z-t.D", new_z)
+    chwrite_d_utf(mesh / "C-t.D", new_c)
+    chwrite_d_utf(mesh / "R-t.D", new_r)
+    chwrite_d_utf(mesh / "Z-t.D", new_z)
 
 
 if __name__ == "__main__":

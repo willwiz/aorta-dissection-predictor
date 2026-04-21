@@ -1,16 +1,29 @@
-from code_pkg.mesh import MeshDef, export_cylinder_mesh, make_cylinder_mesh
+from typing import TYPE_CHECKING
 
-from data.mesh import DEFAULT_CYLINDER
+from code_pkg.mesh import MeshDefN, export_cylinder_mesh, make_cylinder_mesh
+
+from data.mesh import NEW_CYLINDER
+
+if TYPE_CHECKING:
+    from code_pkg.components import TopologyType
 
 _QUAD_ORDER = 2
 
 
-def make_mesh(mesh: MeshDef) -> None:
-    _mesh, _fields = make_cylinder_mesh(
-        mesh["geo"], quad=(mesh["top"]["Disp"]["order"] == _QUAD_ORDER)
-    )
+def make_mesh(mesh: MeshDefN[TopologyType]) -> None:
+    order = mesh["top"]["Disp"].get("order")
+    if not order:
+        msg = "Mesh order not specified"
+        raise ValueError(msg)
+    geo = mesh["geo"]
+    match geo:
+        case {"size": _}: ...  # fmt: skip
+        case _:
+            print(f"Unsupported geometry: {geo}")
+            raise SystemExit(1)
+    _mesh, _fields = make_cylinder_mesh(geo, quad=(order == _QUAD_ORDER))
     export_cylinder_mesh(mesh, _mesh, _fields)
 
 
 if __name__ == "__main__":
-    make_mesh(DEFAULT_CYLINDER)
+    make_mesh(NEW_CYLINDER)

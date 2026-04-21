@@ -90,7 +90,8 @@ def run_pfile(prob: ProblemDef, config: Config) -> str:
         pfile.write(f)
     if config.dry_run:
         return f"{prob['name']}: dry run, not executing"
-    if not (prob["mesh"]["home"] / (prob["mesh"]["top"]["Disp"]["prefix"] + "_FE.PART")).exists():
+    disp_mesh = prob["mesh"]["top"]["Disp"]["mesh"]
+    if not (disp_mesh.parent / (disp_mesh.stem + "_FE.PART")).exists():
         run_prep(file)
     err = run_problem(file, log=True, verbosity="PEDANTIC", cores=config.cores)
     update_deformed_mesh(prob)

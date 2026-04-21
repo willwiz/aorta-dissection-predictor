@@ -3,6 +3,7 @@
     "data",
     "make_*.py",
     "compute_*.py",
+    "construct_*.py",
     "main.py",
     "code-pkg"
   ],
