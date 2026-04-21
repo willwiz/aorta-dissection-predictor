@@ -15,7 +15,7 @@ from cheartpy.fe.api import (
 from .components import (
     ProblemDef,
     create_boundary_conditions,
-    create_cylinder_topologies,
+    create_prob_topologies,
     create_solid_problem,
     create_solid_variables,
     create_strain_calculation,
@@ -27,9 +27,11 @@ if TYPE_CHECKING:
     from cheartpy.fe.trait import IPFile
 
 
-def main_pfile(p: ProblemDef) -> IPFile:
+def main_pfile(
+    p: ProblemDef,
+) -> IPFile:
     time = create_time(p["time"])
-    tops = create_cylinder_topologies(p["mesh"])
+    tops = create_prob_topologies(p["mesh"])
     svars = create_solid_variables(p, tops)
     bc_patches, constraints = create_boundary_conditions(
         mesh=p["mesh"], top=tops, svars=svars, bc=p["bc"]

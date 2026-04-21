@@ -8,7 +8,7 @@ if TYPE_CHECKING:
 
     from cheartpy.fe.trait import IBCPatch, IProblem, ITimeScheme, IVariable
 
-    from code_pkg.mesh import MeshDef
+    from code_pkg.mesh import MeshDefN
 
     from ._types import (
         BCDef,
@@ -40,7 +40,7 @@ def create_pressure_curve(tag: int, v: IVariable, pres: PressureDef) -> IBCPatch
 
 
 def create_slip_bc(
-    mesh: MeshDef,
+    mesh: MeshDefN[TopologyType],
     top: TopologyMap[TopologyType],
     svars: Variables,
     params: tuple[Literal["Inlet", "Outlet"], Literal["x", "y", "z"]],
@@ -55,7 +55,7 @@ def create_slip_bc(
 
 
 def create_noslip_bc(
-    mesh: MeshDef,
+    mesh: MeshDefN[TopologyType],
     svars: Variables,
     params: tuple[Literal["Inlet", "Outlet"], Literal["x", "y", "z"]],
 ) -> tuple[Sequence[IBCPatch], Sequence[IProblem]]:
@@ -65,7 +65,7 @@ def create_noslip_bc(
 
 
 def create_patch(
-    mesh: MeshDef,
+    mesh: MeshDefN[TopologyType],
     top: TopologyMap[TopologyType],
     svars: Variables,
     mode: Literal["SLIP", "HOLD"],
@@ -79,7 +79,7 @@ def create_patch(
 
 
 def create_boundary_conditions(
-    mesh: MeshDef, top: TopologyMap[TopologyType], svars: Variables, bc: BCDef
+    mesh: MeshDefN[TopologyType], top: TopologyMap[TopologyType], svars: Variables, bc: BCDef
 ) -> tuple[Sequence[IBCPatch], Sequence[IProblem]]:
     pres = create_pressure_curve(mesh["bnds"]["Inner"]["tag"], svars.U, bc["Pres"])
     inlet = create_patch(mesh, top, svars, bc.get("Inlet", "SLIP"), ("Inlet", "x"))

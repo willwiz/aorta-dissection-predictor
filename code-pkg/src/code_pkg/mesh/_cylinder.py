@@ -9,7 +9,9 @@ if TYPE_CHECKING:
     from cheartpy.mesh import CheartMesh
     from pytools.arrays import A2, ToFloat
 
-    from ._types import CylinderDef, MeshDef
+    from code_pkg.components import TopologyType
+
+    from ._types import CylinderDef, MeshDefN
 
 
 class MeshTuple[F: np.floating, I: np.integer](NamedTuple):
@@ -99,15 +101,17 @@ def make_cylinder_mesh(
 
 
 def export_cylinder_mesh[F: np.floating, I: np.integer](
-    param: MeshDef, mesh: MeshTuple[F, I], fields: MeshFields[F] | None
+    param: MeshDefN[TopologyType], mesh: MeshTuple[F, I], fields: MeshFields[F] | None
 ) -> None:
     param["home"].mkdir(parents=True, exist_ok=True)
-    mesh.lin.save(param["home"] / param["top"]["Pres"]["prefix"])
-    mesh.disp.save(param["home"] / param["top"]["Disp"]["prefix"])
+    param["top"]["Pres"]["mesh"].parent.mkdir(parents=True, exist_ok=True)
+    param["top"]["Disp"]["mesh"].parent.mkdir(parents=True, exist_ok=True)
+    mesh.lin.save(param["home"] / param["top"]["Pres"]["mesh"])
+    mesh.disp.save(param["home"] / param["top"]["Disp"]["mesh"])
     if not fields:
         return
     field_list = (
-        (param["fields"]["cl"], fields.cl),
+        (param["fields"]["a_z"], fields.cl),
         (param["fields"]["normal"], fields.normal),
         (param["fields"]["fiber"], fields.fiber),
         ("Z-0.D", fields.fiber[:, 0:3]),

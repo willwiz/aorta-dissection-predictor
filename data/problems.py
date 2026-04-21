@@ -3,9 +3,9 @@
 # ///
 
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
-from .mesh import DEFAULT_CYLINDER, DEFORMED_CYLINDER, PILOT_CYLINDER
+from .mesh import NEW_CYLINDER
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -13,11 +13,11 @@ if TYPE_CHECKING:
     from code_pkg.components import ProblemDef
 
 _RESULTS_ROOT = Path("results")
-
+_TOPS = Literal["Disp", "Pres", "Inlet", "Outlet", "Inner", "Outer"]
 RELEASE_PROBLEM: ProblemDef = {
     "name": "release",
     "time": {"end": 300, "step": 0.01},
-    "mesh": DEFAULT_CYLINDER,
+    "mesh": NEW_CYLINDER,
     "mode": "forward",
     "models": [{"matlaw": "NeoHookean", "k": 10.0}],
     "bc": {
@@ -34,7 +34,7 @@ MAIN_PROBLEMS: dict[str, Sequence[ProblemDef]] = {
         {
             "name": "forward_old",
             "time": {"end": 200, "step": 0.01},
-            "mesh": DEFAULT_CYLINDER,
+            "mesh": NEW_CYLINDER,
             "mode": "forward",
             "models": [{"matlaw": "NeoHookean", "k": 10.0}],
             "bc": {
@@ -50,7 +50,7 @@ MAIN_PROBLEMS: dict[str, Sequence[ProblemDef]] = {
         {
             "name": "inverse_old_reference",
             "time": {"end": 200, "step": 0.01},
-            "mesh": DEFAULT_CYLINDER,
+            "mesh": NEW_CYLINDER,
             "mode": "inverse",
             "models": [{"matlaw": "NeoHookean", "k": 10.0}],
             "bc": {
@@ -64,7 +64,7 @@ MAIN_PROBLEMS: dict[str, Sequence[ProblemDef]] = {
         {
             "name": "inverse_old_deformed",
             "time": {"end": 200, "step": 0.01},
-            "mesh": DEFORMED_CYLINDER,
+            "mesh": NEW_CYLINDER,
             "mode": "inverse",
             "models": [{"matlaw": "NeoHookean", "k": 10.0}],
             "bc": {
@@ -78,7 +78,7 @@ MAIN_PROBLEMS: dict[str, Sequence[ProblemDef]] = {
         {
             "name": "inverse_new_reference",
             "time": {"end": 200, "step": 0.01},
-            "mesh": DEFAULT_CYLINDER,
+            "mesh": NEW_CYLINDER,
             "mode": "inverse",
             "models": [{"matlaw": "NeoHookean", "k": 10.0}],
             "bc": {
@@ -92,7 +92,7 @@ MAIN_PROBLEMS: dict[str, Sequence[ProblemDef]] = {
         {
             "name": "inverse_new_deformed",
             "time": {"end": 200, "step": 0.01},
-            "mesh": DEFORMED_CYLINDER,
+            "mesh": NEW_CYLINDER,
             "mode": "inverse",
             "models": [{"matlaw": "NeoHookean", "k": 10.0}],
             "bc": {
@@ -112,7 +112,7 @@ PILOT_PROBLEMS: dict[str, Sequence[ProblemDef]] = {
         {
             "name": f"forward_{t}",
             "time": {"end": 200, "step": 0.01},
-            "mesh": PILOT_CYLINDER,
+            "mesh": NEW_CYLINDER,
             "mode": "forward",
             "models": [{"matlaw": "NeoHookean", "k": 100.0}],
             "bc": {
@@ -128,7 +128,7 @@ PILOT_PROBLEMS: dict[str, Sequence[ProblemDef]] = {
         {
             "name": f"inverse_{t}",
             "time": {"end": 200, "step": 0.01},
-            "mesh": PILOT_CYLINDER,
+            "mesh": NEW_CYLINDER,
             "mode": "inverse",
             "models": [{"matlaw": "NeoHookean", "k": 100.0}],
             "bc": {
@@ -144,7 +144,7 @@ PILOT_PROBLEMS: dict[str, Sequence[ProblemDef]] = {
         {
             "name": f"corrected_{t}",
             "time": {"end": 200, "step": 0.01},
-            "mesh": PILOT_CYLINDER,
+            "mesh": NEW_CYLINDER,
             "mode": "inverse",
             "models": [{"matlaw": "NeoHookean", "k": 100.0}],
             "bc": {

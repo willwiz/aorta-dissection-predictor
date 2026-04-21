@@ -21,7 +21,7 @@ if TYPE_CHECKING:
     from cheartpy.fe.physics.solid_mechanics.solid_problems import ResidualStrainArgs, SolidProblem
     from cheartpy.fe.trait import IBCPatch, ISolverMatrix
 
-    from code_pkg.mesh import MeshDef
+    from code_pkg.mesh import MeshDefN
 
 
 def create_solid_variables(
@@ -50,8 +50,8 @@ def create_matlaw(model: ModelDef) -> Matlaw:
         case {"matlaw": "NeoHookean"}:
             return create_neohookean_matlaw(model)
 
-def _create_residual_strain_tensor(
-    mesh: MeshDef, solid: SolidProblem, strain: float
+def _create_residual_strain_tensor[T](
+    mesh: MeshDefN[T], solid: SolidProblem, strain: float
 ) -> ResidualStrainArgs:
     top = solid.variables["Displacement"].get_top()
     z = create_variable("Z", top, 3, data=mesh["home"] / mesh["fields"]["Z"], freq=1)
@@ -83,8 +83,8 @@ def _create_residual_strain_tensor(
     return {"ResidualF": res_var}
 
 
-def _create_residual_strain_vectors(
-    mesh: MeshDef, solid: SolidProblem, strain: float
+def _create_residual_strain_vectors[T](
+    mesh: MeshDefN[T], solid: SolidProblem, strain: float
 ) -> ResidualStrainArgs:
     top = solid.variables["Displacement"].get_top()
     z = create_variable("Z", top, 3, data=mesh["home"] / mesh["fields"]["Z"], freq=1)
@@ -109,8 +109,8 @@ def _create_residual_strain_vectors(
     return {"ResidualF-weights": res_var_weights, "ResidualF-vectors": res_var_vectors}
 
 
-def _create_residual_strain_deformedvectors(
-    mesh: MeshDef, solid: SolidProblem, strain: float
+def _create_residual_strain_deformedvectors[T](
+    mesh: MeshDefN[T], solid: SolidProblem, strain: float
 ) -> ResidualStrainArgs:
     top = solid.variables["Displacement"].get_top()
     z = create_variable("Z", top, 3, data=mesh["home"] / mesh["fields"]["Z"], freq=1)

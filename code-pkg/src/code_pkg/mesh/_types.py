@@ -3,17 +3,18 @@ from typing import TYPE_CHECKING, Literal, Required
 from typing_extensions import TypedDict
 
 if TYPE_CHECKING:
-    from collections.abc import Mapping
+    from collections.abc import Mapping, Sequence
     from pathlib import Path
 
+    from cheartpy.fe.aliases import TopologyDef
     from pytools.arrays import ToFloat, ToInt
 
 
 class CylinderDef(TypedDict, total=False):
     """Definition of a cylinder mesh.
 
-    Parameters
-    ----------
+    Struct
+    ------
     size
         The number of elements in each direction (r, q, z).
     shape
@@ -34,11 +35,25 @@ class CylinderDef(TypedDict, total=False):
     warp: bool
 
 
-type GeoDef = CylinderDef
+class AortaDef(TypedDict, total=False):
+    """Definition of an aorta mesh.
+
+    Struct
+    ------
+    name: str
+        The name of the aorta mesh.
+    """
+
+    name: str
+
+
+type GeoDef = CylinderDef | AortaDef
 type ElementTypes = Literal["hex", "tet"]
-_TOPS = Literal["Disp", "Pres"]
-_FIELDS = Literal["cl", "center", "fiber"]
-_BNDS = Literal["Inlet", "Outlet", "Inner", "Outer"]
+_TOPS = Literal[
+    "Disp", "Pres", "Inlet", "Outlet", "Inner", "Outer", "Brachial", "Carotid", "Subclavian"
+]
+_FIELDS = Literal["a_z", "center", "fiber"]
+_BNDS = Literal["Inlet", "Outlet", "Inner", "Outer", "Brachial", "Carotid", "Subclavian"]
 
 
 class BndTag(TypedDict, total=True):
@@ -57,7 +72,7 @@ class FieldTags(TypedDict, total=True):
 
     Parameters
     ----------
-    cl
+    a_z
         The tag for the centerline field.
     center
         The tag for the center position field.
@@ -66,7 +81,7 @@ class FieldTags(TypedDict, total=True):
 
     """
 
-    cl: str
+    a_z: str
     center: str
     fiber: str
     normal: str
@@ -90,4 +105,22 @@ class MeshDef(TypedDict, total=False):
     top: Required[Mapping[_TOPS, TopSpec]]
     fields: Required[FieldTags]
     bnds: Required[Mapping[_BNDS, BndTag]]
+    space: str
+
+class MeshDefN[T](TypedDict, total=False):
+    """Definition of a mesh.
+
+    Parameters
+    ----------
+    cylinder
+        The definition of the cylinder mesh.
+
+    """
+
+    label: Sequence[T]
+    geo: Required[GeoDef]
+    home: Required[Path]
+    top: Required[Mapping[T, TopologyDef[T]]]
+    fields: Required[FieldTags]
+    bnds: Required[Mapping[T, BndTag]]
     space: str

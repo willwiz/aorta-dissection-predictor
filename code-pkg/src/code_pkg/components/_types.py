@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Literal, LiteralString, NamedTuple, Required, TypedDict
+from typing import TYPE_CHECKING, Literal, NamedTuple, Required, TypedDict
 
 if TYPE_CHECKING:
     from collections.abc import Mapping, Sequence, ValuesView
@@ -6,12 +6,15 @@ if TYPE_CHECKING:
 
     from cheartpy.fe.trait import ICheartTopology, ITopInterface, IVariable
 
-    from code_pkg.mesh import MeshDef
-
-type TopologyType = Literal["Disp", "Pres", "Inlet", "Outlet", "Inner", "Outer"]
+    from code_pkg.mesh import MeshDefN
 
 
-class TopologyMap[M: LiteralString]:
+type TopologyType = Literal[
+    "Disp", "Pres", "Inlet", "Outlet", "Inner", "Outer", "Brachial", "Carotid", "Subclavian"
+]
+
+
+class TopologyMap[M]:
     _tops: Mapping[M, ICheartTopology]
     _ifaces: Mapping[int, ITopInterface]
 
@@ -79,7 +82,7 @@ type ResidualStrainDef = (
 class ProblemDef(TypedDict, total=False):
     name: Required[str]
     time: Required[TimeDef]
-    mesh: Required[MeshDef]
+    mesh: Required[MeshDefN[TopologyType]]
     mode: Literal["forward", "inverse"]
     models: Required[Sequence[ModelDef]]
     bc: Required[BCDef]
