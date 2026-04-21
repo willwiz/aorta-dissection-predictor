@@ -1,0 +1,190 @@
+#strain = 0.2
+#input = results_aorta_inverse
+% ----------------------------------------------------------------------------------------
+% message
+% ----------------------------------------------------------------------------------------
+% ----  New Output Path  -----------------------------------------------------------------
+!SetOutputPath={results_aorta_release}
+% ----  Define Time Scheme  --------------------------------------------------------------
+!DefTimeStepScheme={time}
+  100  200  0.01
+% ----  Solver Groups  -------------------------------------------------------------------
+!DefSolverGroup={Main|time}
+  !SetSolverGroup={Main|AddVariables|PrestrechDisp}
+  !SetSolverGroup={Main|L2TOL|1e-09}
+!DefSolverSubGroup={Main|seq_fp_linesearch|SolidMatrix|ScaleFirstResidual[100000.0]}
+% ----  Solver Matrices  -----------------------------------------------------------------
+!DefSolverMatrix={SolidMatrix|SOLVER_MUMPS}
+    PSolid
+    PBranchExtension
+    PBranchCentroid
+    PTrunkExtension
+    PTrunkCentroid
+  !SetSolverMatrix={SolidMatrix|SuppressOutput}
+  !SetSolverMatrix={SolidMatrix|ordering|parallel}
+  !SetSolverMatrix={SolidMatrix|SolverMatrixCalculation|evaluate_every_build}
+% ----  Basis Functions  -----------------------------------------------------------------
+!UseBasis={QTet|TETRAHEDRAL_ELEMENT|NL2|KEAST_LYNESS8}
+!UseBasis={QTri|TRIANGLE_ELEMENT|NL2|KEAST_LYNESS8}
+!UseBasis={LTet|TETRAHEDRAL_ELEMENT|NL1|KEAST_LYNESS8}
+!UseBasis={LTri|TRIANGLE_ELEMENT|NL1|KEAST_LYNESS8}
+!UseBasis={ZTri|TRIANGLE_ELEMENT|NL0|KEAST_LYNESS8}
+!UseBasis={ZQuad|TRIANGLE_ELEMENT|NL0|KEAST_LYNESS8}
+% ----  Topologies  ----------------------------------------------------------------------
+!DefTopology={TPQuad|mesh_aorta/Quad|QTet}
+!DefTopology={TPLin|mesh_aorta/Lin|LTet}
+!DefTopology={TPBranchPlanes|mesh_aorta/BranchPlanes|LTri}
+!DefTopology={TPBranchInterface|mesh_aorta/BranchInterface|ZTri}
+  !SetTopology={TPBranchInterface|MakeDiscontinuous}
+!DefTopology={TPTrunkPlanes|mesh_aorta/TrunkPlanes|LTri}
+!DefTopology={TPTrunkInterface|mesh_aorta/TrunkInterface|ZTri}
+  !SetTopology={TPTrunkInterface|MakeDiscontinuous}
+!DefInterface={OneToOne|TPQuad|TPLin}
+!DefInterface={OneToOne|TPBranchInterface|TPBranchPlanes}
+!DefInterface={OneToOne|TPTrunkInterface|TPTrunkPlanes}
+!DefInterface={ManyToOne|TPBranchPlanes|TPLin|mesh_aorta/iface-branch.IN|NestedInBndry[7;6;5]}
+!DefInterface={ManyToOne|TPTrunkPlanes|TPLin|mesh_aorta/iface-trunk.IN|NestedInBndry[2;4]}
+% ----  Variables  -----------------------------------------------------------------------
+!DefVariablePointer={Xi|TPLin|#input/X0-100.D|3}
+!DefVariablePointer={X0|TPLin|#input/X0-100.D|3}
+!DefVariablePointer={U|TPLin|#input/U-100.D|3}
+!DefVariablePointer={P|TPLin|#input/P-100.D|1}
+!DefVariablePointer={LMBranchExtension|TPBranchPlanes|#input/LMBranchExtension-100.D|1}
+!DefVariablePointer={LMBranchCentroid|TPBranchInterface|#input/LMBranchCentroid-100.D|2}
+!DefVariablePointer={LMTrunkExtension|TPTrunkPlanes|#input/LMTrunkExtension-100.D|1}
+!DefVariablePointer={LMTrunkCentroid|TPTrunkInterface|#input/LMTrunkCentroid-100.D|2}
+% --------  Data Variables  --------------------------------------------------------------
+!DefVariablePointer={ResidualWeights|TPLin|3}
+  !SetVariablePointer={ResidualWeights|TEMPORAL_UPDATE_EXPR|residual_weights}
+!DefVariablePointer={ResidualVectors|TPLin|9}
+  !SetVariablePointer={ResidualVectors|INIT_EXPR|residual_vectors}
+!DefVariablePointer={PrestrechDisp|TPLin|#input/U-100.D|3}
+!DefVariablePointer={DataLMTrunkExtension|TPTrunkPlanes|#input/LMTrunkExtension-100.D|1}
+!DefVariablePointer={DataLMTrunkCentroid|TPTrunkInterface|#input/LMTrunkCentroid-100.D|2}
+% --------  Mesh Variables  --------------------------------------------------------------
+!DefVariablePointer={R|TPLin|mesh_aorta/R-0.D|3}
+!DefVariablePointer={Z|TPLin|mesh_aorta/Z-0.D|3}
+!DefVariablePointer={C|TPLin|mesh_aorta/C-0.D|3}
+!DefVariablePointer={BranchNormals|TPBranchPlanes|mesh_aorta/BranchPlanesNormal-0.D|3}
+!DefVariablePointer={BranchDOFs|TPBranchPlanes|mesh_aorta/BranchPlanesBasis-0.D|9}
+!DefVariablePointer={TrunkNormals|TPTrunkPlanes|mesh_aorta/TrunkPlanesNormal-0.D|3}
+!DefVariablePointer={TrunkDOFs|TPTrunkPlanes|mesh_aorta/TrunkPlanesBasis-0.D|9}
+% ----  Export Frequency  ----------------------------------------------------------------
+!SetExportFrequency={X0|Xi|P|U|LMBranchExtension|LMBranchCentroid|LMTrunkExtension|LMTrunkCentroid|1}
+% ----  Problem Definitions  -------------------------------------------------------------
+!DefProblem={PSolid|quasi_static_elasticity}
+  !UseVariablePointer={Space|X0}
+  !UseVariablePointer={Displacement|U}
+  !UseVariablePointer={Pressure|P}
+  !Density={1e-06}
+  !ConstitutiveLaw={neohookean}
+    150.0
+  !Nearly-incompressible
+    1500.0  150.0
+  !Boundary-conditions-not-required
+
+!DefProblem={PBranchExtension|fscoupling_problem}
+  !UseVariablePointer={Space|X0}
+  !Addterms={TestVariable[U]|LMBranchExtension[trace]}
+  !Addterms={TestVariable[LMBranchExtension*]|match_displacment[trace]}
+  !SetPerturbationBuild
+  !SetRootTopology={TPBranchPlanes}
+  !Boundary-conditions-not-required
+
+!DefProblem={PBranchCentroid|fscoupling_problem}
+  !UseVariablePointer={Space|X0}
+  !Addterms={TestVariable[U]|LMBranchCentroid[branch_dof_lm]}
+  !Addterms={TestVariable[LMBranchCentroid*]|match_displacment[branch_dof_u]}
+  !SetPerturbationBuild
+  !SetRootTopology={TPBranchPlanes}
+  !Boundary-conditions-not-required
+
+!DefProblem={PTrunkExtension|fscoupling_problem}
+  !UseVariablePointer={Space|X0}
+  !Addterms={TestVariable[U]|LMTrunkExtension[trace]}
+  !Addterms={TestVariable[LMTrunkExtension*]|match_displacment[trace]}
+  !SetPerturbationBuild
+  !SetRootTopology={TPTrunkPlanes}
+  !Boundary-conditions-not-required
+
+!DefProblem={PTrunkCentroid|fscoupling_problem}
+  !UseVariablePointer={Space|X0}
+  !Addterms={TestVariable[U]|LMTrunkCentroid[trunk_dof_lm]}
+  !Addterms={TestVariable[LMTrunkCentroid*]|LMTrunkCentroid[0.001]|trunk_rotate}
+  !SetPerturbationBuild
+  !SetRootTopology={TPTrunkPlanes}
+  !Boundary-conditions-not-required
+
+!DefExpression={unloading_ramp}
+  1.0 - min((t - 1.0) * (t > 1.0), 1.0)
+
+!DefExpression={trunk_shrink}
+  - 0.001 * unloading_ramp * DataLMTrunkExtension
+
+!DefExpression={trunk_rotate}
+  - 0.001 * unloading_ramp * DataLMTrunkCentroid.1
+  - 0.001 * unloading_ramp * DataLMTrunkCentroid.2
+
+
+% ----  Expression Definitions  ----------------------------------------------------------
+!DefExpression={pressure_curve}
+  -11.0 * min(1.0*(t - 0.0), 1) * (t > 0.0)
+
+!DefExpression={match_displacment}
+  U.1 - PrestrechDisp.1
+  U.2 - PrestrechDisp.2
+  U.3 - PrestrechDisp.3
+
+!DefExpression={axial_stretch}
+  1.0 + #strain * min(t, 1.0)
+
+!DefExpression={offaxial_compression}
+  1.0 / sqrt(axial_stretch)
+
+!DefExpression={residual_weights}
+  axial_stretch
+  offaxial_compression
+  offaxial_compression
+
+!DefExpression={residual_vectors}
+  Z.1
+  Z.2
+  Z.3
+  C.1
+  C.2
+  C.3
+  R.1
+  R.2
+  R.3
+
+!DefExpression={branch_dof_u}
+  BranchDOFs.4
+  BranchDOFs.5
+  BranchDOFs.6
+  BranchDOFs.7
+  BranchDOFs.8
+  BranchDOFs.9
+
+!DefExpression={branch_dof_lm}
+  BranchDOFs.4
+  BranchDOFs.7
+  BranchDOFs.5
+  BranchDOFs.8
+  BranchDOFs.6
+  BranchDOFs.9
+
+!DefExpression={trunk_dof_u}
+  TrunkDOFs.4
+  TrunkDOFs.5
+  TrunkDOFs.6
+  TrunkDOFs.7
+  TrunkDOFs.8
+  TrunkDOFs.9
+
+!DefExpression={trunk_dof_lm}
+  TrunkDOFs.4
+  TrunkDOFs.7
+  TrunkDOFs.5
+  TrunkDOFs.8
+  TrunkDOFs.6
+  TrunkDOFs.9

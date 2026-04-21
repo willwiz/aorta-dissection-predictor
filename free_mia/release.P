@@ -1,0 +1,161 @@
+#strain = 0.2
+#input = results_aorta_inverse
+% ----------------------------------------------------------------------------------------
+% message
+% ----------------------------------------------------------------------------------------
+% ----  New Output Path  -----------------------------------------------------------------
+!SetOutputPath={results_aorta_release}
+% ----  Define Time Scheme  --------------------------------------------------------------
+!DefTimeStepScheme={time}
+  100  200  0.01
+% ----  Solver Groups  -------------------------------------------------------------------
+!DefSolverGroup={Main|time}
+  !SetSolverGroup={Main|export_initial_condition}
+  !SetSolverGroup={Main|L2TOL|1e-09}
+!DefSolverSubGroup={Main|seq_fp_linesearch|SolidMatrix|ScaleFirstResidual[100000.0]}
+% ----  Solver Matrices  -----------------------------------------------------------------
+!DefSolverMatrix={SolidMatrix|SOLVER_MUMPS}
+    PSolid
+    PExtension
+    PCentroid
+    PUnloading
+  !SetSolverMatrix={SolidMatrix|SuppressOutput}
+  !SetSolverMatrix={SolidMatrix|ordering|parallel}
+  !SetSolverMatrix={SolidMatrix|SolverMatrixCalculation|evaluate_every_build}
+% ----  Basis Functions  -----------------------------------------------------------------
+!UseBasis={QTet|TETRAHEDRAL_ELEMENT|NL2|KEAST_LYNESS8}
+!UseBasis={QTri|TRIANGLE_ELEMENT|NL2|KEAST_LYNESS8}
+!UseBasis={LTet|TETRAHEDRAL_ELEMENT|NL1|KEAST_LYNESS8}
+!UseBasis={LTri|TRIANGLE_ELEMENT|NL1|KEAST_LYNESS8}
+!UseBasis={ZTri|TRIANGLE_ELEMENT|NL0|KEAST_LYNESS8}
+!UseBasis={ZQuad|TRIANGLE_ELEMENT|NL0|KEAST_LYNESS8}
+% ----  Topologies  ----------------------------------------------------------------------
+!DefTopology={TPQuad|mesh_aorta/Quad|QTet}
+!DefTopology={TPLin|mesh_aorta/Lin|LTet}
+!DefTopology={TPCutplanes|mesh_aorta/Cutplanes|LTri}
+!DefTopology={TPInterface|mesh_aorta/Interface|ZTri}
+  !SetTopology={TPInterface|MakeDiscontinuous}
+!DefInterface={OneToOne|TPQuad|TPLin}
+!DefInterface={OneToOne|TPInterface|TPCutplanes}
+!DefInterface={ManyToOne|TPCutplanes|TPLin|mesh_aorta/iface-cutplanes.IN|NestedInBndry[2;4;7;6;5]}
+% ----  Variables  -----------------------------------------------------------------------
+!DefVariablePointer={Xi|TPLin|#input/X0-100.D|3}
+!DefVariablePointer={X0|TPLin|#input/X0-100.D|3}
+!DefVariablePointer={U|TPLin|#input/U-100.D|3}
+!DefVariablePointer={P|TPLin|#input/P-100.D|1}
+!DefVariablePointer={LMExtension|TPCutplanes|#input/LMExtension-100.D|1}
+!DefVariablePointer={LMCentroid|TPInterface|#input/LMCentroid-100.D|2}
+% --------  Data Variables  --------------------------------------------------------------
+!DefVariablePointer={ResidualWeights|TPLin|3}
+  !SetVariablePointer={ResidualWeights|TEMPORAL_UPDATE_EXPR|residual_weights}
+!DefVariablePointer={ResidualVectors|TPLin|9}
+  !SetVariablePointer={ResidualVectors|INIT_EXPR|residual_vectors}
+!DefVariablePointer={DataLMExtension|TPCutplanes|#input/LMExtension-100.D|1}
+% --------  Mesh Variables  --------------------------------------------------------------
+!DefVariablePointer={R|TPLin|mesh_aorta/R-0.D|3}
+!DefVariablePointer={Z|TPLin|mesh_aorta/Z-0.D|3}
+!DefVariablePointer={C|TPLin|mesh_aorta/C-0.D|3}
+!DefVariablePointer={Normals|TPCutplanes|mesh_aorta/CutplanesNormal-0.D|3}
+!DefVariablePointer={DOFs|TPCutplanes|mesh_aorta/CutplanesBasis-0.D|9}
+!DefVariablePointer={IDs|TPCutplanes|mesh_aorta/CutplanesIDs-0.D|1}
+% ----  Export Frequency  ----------------------------------------------------------------
+!SetExportFrequency={X0|Xi|P|U|LMExtension|LMCentroid|1}
+% ----  Problem Definitions  -------------------------------------------------------------
+!DefProblem={PSolid|quasi_static_elasticity}
+  !UseVariablePointer={Space|X0}
+  !UseVariablePointer={Displacement|U}
+  !UseVariablePointer={Pressure|P}
+  !UseVariablePointer={ResidualF-weights|ResidualWeights}
+  !UseVariablePointer={ResidualF-deformedvectors|ResidualVectors}
+  !Density={1e-06}
+  !ConstitutiveLaw={neohookean}
+    150.0
+  !Nearly-incompressible
+    1500.0  150.0
+  !Boundary-conditions-not-required
+
+!DefProblem={PExtension|fscoupling_problem}
+  !UseVariablePointer={Space|X0}
+  !Addterms={TestVariable[U]|lm_cutfaces[trace]}
+  !Addterms={TestVariable[LMExtension*]|u_cutfaces[trace]}
+  !SetPerturbationBuild
+  !SetRootTopology={TPCutplanes}
+  !Boundary-conditions-not-required
+
+!DefProblem={PCentroid|fscoupling_problem}
+  !UseVariablePointer={Space|X0}
+  !Addterms={TestVariable[U]|LMCentroid[dof_lm]}
+  !Addterms={TestVariable[LMCentroid*]|U[dof_u]}
+  !SetPerturbationBuild
+  !SetRootTopology={TPCutplanes}
+  !Boundary-conditions-not-required
+
+!DefProblem={PUnloading|fscoupling_problem}
+  !UseVariablePointer={Space|X0}
+  !Addterms={TestVariable[U]|lm_outlet_traction[trace]}
+  !Addterms={TestVariable[LMExtension*]|lm_outlet_unloading}
+  !SetPerturbationBuild
+  !SetRootTopology={TPCutplanes}
+  !Boundary-conditions-not-required
+  
+!DefExpression={is_outlet}
+  abs(IDs - 4) < 0.1
+
+!DefExpression={not_outlet}
+  1 - is_outlet
+
+!DefExpression={lm_cutfaces}
+  LMExtension * not_outlet
+
+!DefExpression={u_cutfaces}
+  U.1 * not_outlet
+  U.2 * not_outlet
+  U.3 * not_outlet
+
+!DefExpression={lm_outlet_traction}
+  LMExtension * is_outlet
+
+!DefExpression={lm_outlet_unloading}
+  0.001 * (LMExtension - max(1.0 - (t - 1.0)*(t > 1.0), 0) * DataLMExtension) * is_outlet
+
+% ----  Expression Definitions  ----------------------------------------------------------
+!DefExpression={pressure_curve}
+  -11.0 * min(1.0*(t - 0.0), 1) * (t > 0.0)
+
+!DefExpression={axial_stretch}
+  1.0 + #strain * min(t, 1.0)
+
+!DefExpression={offaxial_compression}
+  1.0 / sqrt(axial_stretch)
+
+!DefExpression={residual_weights}
+  axial_stretch
+  offaxial_compression
+  offaxial_compression
+
+!DefExpression={residual_vectors}
+  Z.1
+  Z.2
+  Z.3
+  C.1
+  C.2
+  C.3
+  R.1
+  R.2
+  R.3
+
+!DefExpression={dof_u}
+  DOFs.4
+  DOFs.5
+  DOFs.6
+  DOFs.7
+  DOFs.8
+  DOFs.9
+
+!DefExpression={dof_lm}
+  DOFs.4
+  DOFs.7
+  DOFs.5
+  DOFs.8
+  DOFs.6
+  DOFs.9

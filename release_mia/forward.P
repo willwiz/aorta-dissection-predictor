@@ -1,0 +1,266 @@
+#strain = 0.2
+% ----------------------------------------------------------------------------------------
+% message
+% ----------------------------------------------------------------------------------------
+% ----  New Output Path  -----------------------------------------------------------------
+!SetOutputPath={results_release_mia_forward}
+% ----  Define Time Scheme  --------------------------------------------------------------
+!DefTimeStepScheme={time}
+  1  100  0.01
+% ----  Solver Groups  -------------------------------------------------------------------
+!DefSolverGroup={Main|time}
+  !SetSolverGroup={Main|export_initial_condition}
+  !SetSolverGroup={Main|L2TOL|1e-09}
+!DefSolverSubGroup={Main|seq_fp_linesearch|SolidMatrix|ScaleFirstResidual[100000.0]}
+% ----  Solver Matrices  -----------------------------------------------------------------
+!DefSolverMatrix={SolidMatrix|SOLVER_MUMPS}
+    PSolid
+    PInlet
+    POutlet
+    PBrachial
+    PCarotid
+    PSubclavian
+    PInletCentroid
+    POutletCentroid
+    PBrachialCentroid
+    PCarotidCentroid
+    PSubclavianCentroid
+  !SetSolverMatrix={SolidMatrix|SuppressOutput}
+  !SetSolverMatrix={SolidMatrix|ordering|parallel}
+  !SetSolverMatrix={SolidMatrix|SolverMatrixCalculation|evaluate_every_build}
+
+% ----  Basis Functions  -----------------------------------------------------------------
+!UseBasis={QTet|TETRAHEDRAL_ELEMENT|NL2|KEAST_LYNESS8}
+!UseBasis={QTri|TRIANGLE_ELEMENT|NL2|KEAST_LYNESS8}
+!UseBasis={LTet|TETRAHEDRAL_ELEMENT|NL1|KEAST_LYNESS8}
+!UseBasis={LTri|TRIANGLE_ELEMENT|NL1|KEAST_LYNESS8}
+!UseBasis={ZQuad|TRIANGLE_ELEMENT|NL0|KEAST_LYNESS8}
+% ----  Topologies  ----------------------------------------------------------------------
+!DefTopology={TPQuad|mesh_mia/model_quad|QTet}
+!DefTopology={TPLin|mesh_mia/model|LTet}
+!DefTopology={TPInner|mesh_mia/model_inner|LTri}
+!DefTopology={TPOuter|mesh_mia/model_outer|LTri}
+!DefTopology={TPInlet|mesh_mia/model_inlet|LTri}
+!DefTopology={TPOutlet|mesh_mia/model_outlet|LTri}
+!DefTopology={TPBrachial|mesh_mia/model_brachial|LTri}
+!DefTopology={TPCarotid|mesh_mia/model_carotid|LTri}
+!DefTopology={TPSubclavian|mesh_mia/model_subclavian|LTri}
+!DefInterface={OneToOne|TPQuad|TPLin}
+!DefInterface={ManyToOne|TPInner|TPLin|mesh_mia/iface-inner.IN|NestedInBndry[3]}
+!DefInterface={ManyToOne|TPOuter|TPLin|mesh_mia/iface-outer.IN|NestedInBndry[1]}
+!DefInterface={ManyToOne|TPInlet|TPLin|mesh_mia/iface-inlet.IN|NestedInBndry[2]}
+!DefInterface={ManyToOne|TPOutlet|TPLin|mesh_mia/iface-outlet.IN|NestedInBndry[4]}
+!DefInterface={ManyToOne|TPBrachial|TPLin|mesh_mia/iface-brachial.IN|NestedInBndry[7]}
+!DefInterface={ManyToOne|TPCarotid|TPLin|mesh_mia/iface-carotid.IN|NestedInBndry[6]}
+!DefInterface={ManyToOne|TPSubclavian|TPLin|mesh_mia/iface-subclavian.IN|NestedInBndry[5]}
+% ----  Variables  -----------------------------------------------------------------------
+!DefVariablePointer={Xi|TPLin|3}
+!DefVariablePointer={X0|TPLin|mesh_mia/model|3}
+!DefVariablePointer={U|TPLin|3}
+!DefVariablePointer={P|TPLin|1}
+!DefVariablePointer={LMInner|TPInner|1}
+!DefVariablePointer={LMOuter|TPOuter|1}
+!DefVariablePointer={LMInlet|TPInlet|1}
+!DefVariablePointer={LMOutlet|TPOutlet|1}
+!DefVariablePointer={LMBrachial|TPBrachial|1}
+!DefVariablePointer={LMCarotid|TPCarotid|1}
+!DefVariablePointer={LMSubclavian|TPSubclavian|1}
+!DefVariablePointer={CentroidLMInner|NULL_TOPOLOGY|2}
+!DefVariablePointer={CentroidLMOuter|NULL_TOPOLOGY|2}
+!DefVariablePointer={CentroidLMInlet|NULL_TOPOLOGY|2}
+!DefVariablePointer={CentroidLMOutlet|NULL_TOPOLOGY|2}
+!DefVariablePointer={CentroidLMBrachial|NULL_TOPOLOGY|2}
+!DefVariablePointer={CentroidLMCarotid|NULL_TOPOLOGY|2}
+!DefVariablePointer={CentroidLMSubclavian|NULL_TOPOLOGY|2}
+!DefVariablePointer={InnerNormal|TPInner|mesh_mia/InnerNormal-0.D|3}
+!DefVariablePointer={OuterNormal|TPOuter|mesh_mia/OuterNormal-0.D|3}
+!DefVariablePointer={InletNormal|TPInlet|mesh_mia/InletNormal-0.D|3}
+!DefVariablePointer={OutletNormal|TPOutlet|mesh_mia/OutletNormal-0.D|3}
+!DefVariablePointer={BrachialNormal|TPBrachial|mesh_mia/BrachialNormal-0.D|3}
+!DefVariablePointer={CarotidNormal|TPCarotid|mesh_mia/CarotidNormal-0.D|3}
+!DefVariablePointer={SubclavianNormal|TPSubclavian|mesh_mia/SubclavianNormal-0.D|3}
+!DefVariablePointer={InnerDOF|NULL_TOPOLOGY|mesh_mia/InnerBasis-0.D|6}
+!DefVariablePointer={OuterDOF|NULL_TOPOLOGY|mesh_mia/OuterBasis-0.D|6}
+!DefVariablePointer={InletDOF|NULL_TOPOLOGY|mesh_mia/InletBasis-0.D|6}
+!DefVariablePointer={OutletDOF|NULL_TOPOLOGY|mesh_mia/OutletBasis-0.D|6}
+!DefVariablePointer={BrachialDOF|NULL_TOPOLOGY|mesh_mia/BrachialBasis-0.D|6}
+!DefVariablePointer={CarotidDOF|NULL_TOPOLOGY|mesh_mia/CarotidBasis-0.D|6}
+!DefVariablePointer={SubclavianDOF|NULL_TOPOLOGY|mesh_mia/SubclavianBasis-0.D|6}
+% ----  Export Frequency  ----------------------------------------------------------------
+!SetExportFrequency={X0|Xi|P|U|1}
+!SetExportFrequency={LMInner|LMOuter|LMInlet|LMOutlet|LMBrachial|LMCarotid|LMSubclavian|1}
+% ----  Problem Definitions  -------------------------------------------------------------
+!DefProblem={PSolid|quasi_static_elasticity}
+  !UseVariablePointer={Space|X0}
+  !UseVariablePointer={Displacement|U}
+  !UseVariablePointer={Pressure|P}
+  !Density={1e-06}
+  !ConstitutiveLaw={neohookean}
+    150.0
+  !Nearly-incompressible
+    1500.0  1500.0
+  !Boundary-patch-definitions
+    3  U  scaled_normal  pressure_curve
+
+!DefProblem={PInlet|fscoupling_problem}
+  !UseVariablePointer={Space|X0}
+  !Addterms={TestVariable[U]|LMInlet[trace]}
+  !Addterms={TestVariable[LMInlet*]|U[trace]}
+  !SetPerturbationBuild
+  !SetRootTopology={TPInlet}
+  !Boundary-conditions-not-required
+
+!DefProblem={POutlet|fscoupling_problem}
+  !UseVariablePointer={Space|X0}
+  !Addterms={TestVariable[U]|LMOutlet[trace]}
+  !Addterms={TestVariable[LMOutlet*]|U[trace]}
+  !SetPerturbationBuild
+  !SetRootTopology={TPOutlet}
+  !Boundary-conditions-not-required
+
+!DefProblem={PBrachial|fscoupling_problem}
+  !UseVariablePointer={Space|X0}
+  !Addterms={TestVariable[U]|LMBrachial[trace]}
+  !Addterms={TestVariable[LMBrachial*]|U[trace]}
+  !SetPerturbationBuild
+  !SetRootTopology={TPBrachial}
+  !Boundary-conditions-not-required
+
+!DefProblem={PCarotid|fscoupling_problem}
+  !UseVariablePointer={Space|X0}
+  !Addterms={TestVariable[U]|LMCarotid[trace]}
+  !Addterms={TestVariable[LMCarotid*]|U[trace]}
+  !SetPerturbationBuild
+  !SetRootTopology={TPCarotid}
+  !Boundary-conditions-not-required
+
+!DefProblem={PSubclavian|fscoupling_problem}
+  !UseVariablePointer={Space|X0}
+  !Addterms={TestVariable[U]|LMSubclavian[trace]}
+  !Addterms={TestVariable[LMSubclavian*]|U[trace]}
+  !SetPerturbationBuild
+  !SetRootTopology={TPSubclavian}
+  !Boundary-conditions-not-required
+
+!DefProblem={PInletCentroid|fscoupling_problem}
+  !UseVariablePointer={Space|X0}
+  !Addterms={TestVariable[U]|CentroidLMInlet[inlet_dof_lm]}
+  !Addterms={TestVariable[CentroidLMInlet*]|U[inlet_dof_u]}
+  !SetPerturbationBuild
+  !SetRootTopology={TPInlet}
+  !Boundary-conditions-not-required
+
+!DefProblem={POutletCentroid|fscoupling_problem}
+  !UseVariablePointer={Space|X0}
+  !Addterms={TestVariable[U]|CentroidLMOutlet[outlet_dof_lm]}
+  !Addterms={TestVariable[CentroidLMOutlet*]|U[outlet_dof_u]}
+  !SetPerturbationBuild
+  !SetRootTopology={TPOutlet}
+  !Boundary-conditions-not-required
+
+!DefProblem={PBrachialCentroid|fscoupling_problem}
+  !UseVariablePointer={Space|X0}
+  !Addterms={TestVariable[U]|CentroidLMBrachial[brachial_dof_lm]}
+  !Addterms={TestVariable[CentroidLMBrachial*]|U[brachial_dof_u]}
+  !SetPerturbationBuild
+  !SetRootTopology={TPBrachial}
+  !Boundary-conditions-not-required
+
+!DefProblem={PCarotidCentroid|fscoupling_problem}
+  !UseVariablePointer={Space|X0}
+  !Addterms={TestVariable[U]|CentroidLMCarotid[carotid_dof_lm]}
+  !Addterms={TestVariable[CentroidLMCarotid*]|U[carotid_dof_u]}
+  !SetPerturbationBuild
+  !SetRootTopology={TPCarotid}
+  !Boundary-conditions-not-required
+
+!DefProblem={PSubclavianCentroid|fscoupling_problem}
+  !UseVariablePointer={Space|X0}
+  !Addterms={TestVariable[U]|CentroidLMSubclavian[subclavian_dof_lm]}
+  !Addterms={TestVariable[CentroidLMSubclavian*]|U[subclavian_dof_u]}
+  !SetPerturbationBuild
+  !SetRootTopology={TPSubclavian}
+  !Boundary-conditions-not-required
+
+!DefExpression={pressure_curve}
+  -11.0 * min(1.0*(t - 0.0), 1) * (t > 0.0)
+
+!DefExpression={inlet_dof_u}
+  InletDOF.1
+  InletDOF.2
+  InletDOF.3
+  InletDOF.4
+  InletDOF.5
+  InletDOF.6
+
+!DefExpression={inlet_dof_lm}
+  InletDOF.1
+  InletDOF.4
+  InletDOF.2
+  InletDOF.5
+  InletDOF.3
+  InletDOF.6
+
+!DefExpression={outlet_dof_u}
+  OutletDOF.1
+  OutletDOF.2
+  OutletDOF.3
+  OutletDOF.4
+  OutletDOF.5
+  OutletDOF.6
+
+!DefExpression={outlet_dof_lm}
+  OutletDOF.1
+  OutletDOF.4
+  OutletDOF.2
+  OutletDOF.5
+  OutletDOF.3
+  OutletDOF.6
+
+!DefExpression={brachial_dof_u}
+  BrachialDOF.1
+  BrachialDOF.2
+  BrachialDOF.3
+  BrachialDOF.4
+  BrachialDOF.5
+  BrachialDOF.6
+
+!DefExpression={brachial_dof_lm}
+  BrachialDOF.1
+  BrachialDOF.4
+  BrachialDOF.2
+  BrachialDOF.5
+  BrachialDOF.3
+  BrachialDOF.6
+
+!DefExpression={carotid_dof_u}
+  CarotidDOF.1
+  CarotidDOF.2
+  CarotidDOF.3
+  CarotidDOF.4
+  CarotidDOF.5
+  CarotidDOF.6
+
+!DefExpression={carotid_dof_lm}
+  CarotidDOF.1
+  CarotidDOF.4
+  CarotidDOF.2
+  CarotidDOF.5
+  CarotidDOF.3
+  CarotidDOF.6
+
+!DefExpression={subclavian_dof_u}
+  SubclavianDOF.1
+  SubclavianDOF.2
+  SubclavianDOF.3
+  SubclavianDOF.4
+  SubclavianDOF.5
+  SubclavianDOF.6
+
+!DefExpression={subclavian_dof_lm}
+  SubclavianDOF.1
+  SubclavianDOF.4
+  SubclavianDOF.2
+  SubclavianDOF.5
+  SubclavianDOF.3
+  SubclavianDOF.6
