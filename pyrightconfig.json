@@ -19,6 +19,7 @@
     "**/.*",
     "**/*.vtu",
     "**/*.log",
+    "prestretch_*",
   ],
   "ignore": [
     ".deps"

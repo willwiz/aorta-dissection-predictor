@@ -16,7 +16,7 @@ wheels/
 /*.zip
 /*.tar.gz
 /test*.py
-
+/prestretch_*
 # Data files
 *.vtu
 *.log
