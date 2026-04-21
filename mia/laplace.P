@@ -3,7 +3,7 @@
 % message
 % ----------------------------------------------------------------------------------------
 % ----  New Output Path  -----------------------------------------------------------------
-!SetOutputPath={results_mia_fibers}
+!SetOutputPath={mesh_mia}
 % ----  Define Time Scheme  --------------------------------------------------------------
 !DefTimeStepScheme={time}
   1  1  1
@@ -67,9 +67,9 @@
   !Boundary-patch-definitions
     2  Az  dirichlet  0
     4  Az  dirichlet  1
-    5  Az  dirichlet  0.36
-    6  Az  dirichlet  0.35
-    7  Az  dirichlet  0.34
+    5  Az  dirichlet  0.46
+    6  Az  dirichlet  0.45
+    7  Az  dirichlet  0.44
 
 
 !DefProblem={FCalcOrientationR|l2varprojection_problem}
