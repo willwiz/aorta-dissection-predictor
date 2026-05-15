@@ -6,12 +6,11 @@ from ._solid import (
     create_stress_calculation,
 )
 from ._topology import create_prob_topologies
-from ._types import ProblemDef, TopologyMap, TopologyType, Variables
+from ._types import ProblemDef, TopologyMap, Variables
 
 __all__ = [
     "ProblemDef",
     "TopologyMap",
-    "TopologyType",
     "Variables",
     "create_boundary_conditions",
     "create_prob_topologies",

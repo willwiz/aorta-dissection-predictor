@@ -8,17 +8,9 @@ if TYPE_CHECKING:
 
     from cheartpy.fe.trait import IBCPatch, IProblem, ITimeScheme, IVariable
 
-    from code_pkg.mesh import MeshDefN
+    from code_pkg.mesh import MeshDefN, TopologyType
 
-    from ._types import (
-        BCDef,
-        LinearPressure,
-        PressureDef,
-        TimeDef,
-        TopologyMap,
-        TopologyType,
-        Variables,
-    )
+    from ._types import BCDef, LinearPressure, PressureDef, TimeDef, TopologyMap, Variables
 
 
 def create_time(time: TimeDef) -> ITimeScheme:

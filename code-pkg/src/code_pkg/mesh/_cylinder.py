@@ -9,9 +9,7 @@ if TYPE_CHECKING:
     from cheartpy.mesh import CheartMesh
     from pytools.arrays import A2, ToFloat
 
-    from code_pkg.components import TopologyType
-
-    from ._types import CylinderDef, MeshDefN
+    from ._types import CylinderDef, MeshDefN, TopologyType
 
 
 class MeshTuple[F: np.floating, I: np.integer](NamedTuple):
@@ -106,14 +104,12 @@ def export_cylinder_mesh[F: np.floating, I: np.integer](
     param["home"].mkdir(parents=True, exist_ok=True)
     param["top"]["Pres"]["mesh"].parent.mkdir(parents=True, exist_ok=True)
     param["top"]["Disp"]["mesh"].parent.mkdir(parents=True, exist_ok=True)
-    mesh.lin.save(param["home"] / param["top"]["Pres"]["mesh"])
-    mesh.disp.save(param["home"] / param["top"]["Disp"]["mesh"])
+    mesh.lin.save(param["top"]["Pres"]["mesh"])
+    mesh.disp.save(param["top"]["Disp"]["mesh"])
     if not fields:
         return
     field_list = (
         (param["fields"]["a_z"], fields.cl),
-        (param["fields"]["normal"], fields.normal),
-        (param["fields"]["fiber"], fields.fiber),
         ("Z-0.D", fields.fiber[:, 0:3]),
         ("C-0.D", fields.fiber[:, 3:6]),
         ("R-0.D", fields.fiber[:, 6:9]),

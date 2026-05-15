@@ -6,12 +6,7 @@ if TYPE_CHECKING:
 
     from cheartpy.fe.trait import ICheartTopology, ITopInterface, IVariable
 
-    from code_pkg.mesh import MeshDefN
-
-
-type TopologyType = Literal[
-    "Disp", "Pres", "Inlet", "Outlet", "Inner", "Outer", "Brachial", "Carotid", "Subclavian"
-]
+    from code_pkg.mesh import MeshDefN, TopologyType
 
 
 class TopologyMap[M]:

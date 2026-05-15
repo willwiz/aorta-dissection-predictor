@@ -9,6 +9,23 @@ if TYPE_CHECKING:
     from cheartpy.fe.aliases import TopologyDef
     from pytools.arrays import ToFloat, ToInt
 
+type TopologyType = Literal[
+    "Disp", "Pres", "Inlet", "Outlet", "Inner", "Outer", "Brachial", "Carotid", "Subclavian"
+]
+type DissectedType = Literal[
+    "Disp",
+    "Pres",
+    "Inlet",
+    "Outlet",
+    "Inner",
+    "Outer",
+    "Brachial",
+    "Carotid",
+    "Subclavian",
+    "ca1",
+    "ca2",
+    "ca3",
+]
 
 class CylinderDef(TypedDict, total=False):
     """Definition of a cylinder mesh.
@@ -78,16 +95,17 @@ class FieldTags(TypedDict, total=True):
         The tag for the center position field.
     fiber
         The tag for the fiber direction field.
+    a_c
+        The tag for the aorta coordinate field.
 
     """
 
     a_z: str
-    center: str
-    fiber: str
-    normal: str
+    a_r: str
+    a_c: str
     Z: str
-    C: str
     R: str
+    C: str
 
 
 class MeshDef(TypedDict, total=False):

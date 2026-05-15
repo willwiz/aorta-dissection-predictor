@@ -17,12 +17,28 @@ if __name__ == "__main__":
     #     var=["U", "P"],
     #     thread=16,
     # )
-    # folder = Path("results_aorta_forward")
+    # folder = Path("results_aorta_inverse")
     # cheart2vtu_find(
     #     mesh=Path("mesh_aorta/Lin"),
     #     input_dir=folder,
     #     output_dir=folder,
     #     var=["U", "P"],
+    #     thread=16,
+    # )
+    # folder = Path("results_straight_inverse")
+    # cheart2vtu_find(
+    #     mesh=Path("mesh/quad"),
+    #     input_dir=folder,
+    #     output_dir=folder,
+    #     var=["U"],
+    #     thread=16,
+    # )
+    # folder = Path("results_straight_center")
+    # cheart2vtu_find(
+    #     mesh=Path("mesh/quad"),
+    #     input_dir=folder,
+    #     output_dir=folder,
+    #     var=["U"],
     #     thread=16,
     # )
     # folder = Path("results_aorta_inverse")
@@ -33,15 +49,67 @@ if __name__ == "__main__":
     #     var=["U", "P"],
     #     thread=16,
     # )
-    folder = Path("results_aorta_release")
+    # folder = Path("results_aorta_detether")
+    # cheart2vtu_find(
+    #     mesh=Path("mesh_aorta/Lin"),
+    #     space=folder / "X0-100.D",
+    #     input_dir=folder,
+    #     output_dir=folder,
+    #     var=["U", "P"],
+    #     thread=16,
+    # )
+    # folder = Path("results_aorta_forward")
+    # cheart2vtu_find(
+    #     mesh=Path("mesh_aorta/Lin"),
+    #     input_dir=folder,
+    #     output_dir=folder,
+    #     var=["U", "P"],
+    #     thread=32,
+    # )
+    # folder = Path("results_aorta_dettach")
+    # cheart2vtu_find(
+    #     mesh=Path("mesh_aorta/Lin"),
+    #     space=folder / "X0-100.D",
+    #     input_dir=folder,
+    #     output_dir=folder,
+    #     var=["U", "P"],
+    #     thread=32,
+    # )
+    # folder = Path("results_circ_dettach")
+    # cheart2vtu_find(
+    #     mesh=Path("mesh_aorta/Lin"),
+    #     space=folder / "X0-100.D",
+    #     input_dir=folder,
+    #     output_dir=folder,
+    #     var=["U", "P"],
+    #     thread=32,
+    # )
+    # folder = Path("results_iso_dettach")
+    # cheart2vtu_find(
+    #     mesh=Path("mesh_aorta/Lin"),
+    #     space=folder / "X0-100.D",
+    #     input_dir=folder,
+    #     output_dir=folder,
+    #     var=["U", "P"],
+    #     thread=32,
+    # )
+    folder = Path("results_plane_destretch")
     cheart2vtu_find(
-        mesh=Path("mesh_aorta/Lin"),
+        mesh=Path("mesh_plane/Lin"),
         space=folder / "X0-100.D",
         input_dir=folder,
         output_dir=folder,
         var=["U", "P"],
-        thread=16,
+        thread=32,
     )
+    # folder = Path("results_plane_inverse")
+    # cheart2vtu_find(
+    #     mesh=Path("mesh_plane/Lin"),
+    #     input_dir=folder,
+    #     output_dir=folder,
+    #     var=["U", "P"],
+    #     thread=16,
+    # )
     # cheart2vtu_find(
     #     mesh=Path("mesh_mia/model_quad"),
     #     input_dir=Path("results_release_mia_back"),

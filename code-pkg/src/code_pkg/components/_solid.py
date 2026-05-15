@@ -11,7 +11,6 @@ from ._types import (
     NeoHookeanDef,
     ProblemDef,
     TopologyMap,
-    TopologyType,
     Variables,
 )
 
@@ -21,7 +20,7 @@ if TYPE_CHECKING:
     from cheartpy.fe.physics.solid_mechanics.solid_problems import ResidualStrainArgs, SolidProblem
     from cheartpy.fe.trait import IBCPatch, ISolverMatrix
 
-    from code_pkg.mesh import MeshDefN
+    from code_pkg.mesh import MeshDefN, TopologyType
 
 
 def create_solid_variables(
