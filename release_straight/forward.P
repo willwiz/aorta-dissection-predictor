@@ -4,87 +4,103 @@
 % message
 % ----------------------------------------------------------------------------------------
 % ----  New Output Path  -----------------------------------------------------------------
-!SetOutputPath={results_release_mia_inverse}
+!SetOutputPath={results_straight_forward}
 % ----  Define Time Scheme  --------------------------------------------------------------
 !DefTimeStepScheme={time}
   1  100  0.01
 % ----  Solver Groups  -------------------------------------------------------------------
 !DefSolverGroup={Main|time}
-  !SetSolverGroup={Main|AddVariables|C|R|Z|ResidualWeights|ResidualVectors}
+  !SetSolverGroup={Main|AddVariables}
   !SetSolverGroup={Main|export_initial_condition}
   !SetSolverGroup={Main|L2TOL|1e-09}
 !DefSolverSubGroup={Main|seq_fp_linesearch|SolidMatrix|ScaleFirstResidual[100000.0]}
-!DefSolverSubGroup={Main|SOLVER_SEQUENTIAL|PBoundaryTractionCalc}
+%!DefSolverSubGroup={Main|SOLVER_SEQUENTIAL|PBoundaryTractionCalc}
 % ----  Solver Matrices  -----------------------------------------------------------------
 !DefSolverMatrix={SolidMatrix|SOLVER_MUMPS}
     PSolid
-    PTranslationInlet
+    PRotationInlet
     PTranslationOutlet
   !SetSolverMatrix={SolidMatrix|SuppressOutput}
   !SetSolverMatrix={SolidMatrix|ordering|parallel}
   !SetSolverMatrix={SolidMatrix|SolverMatrixCalculation|evaluate_every_build}
 % ----  Basis Functions  -----------------------------------------------------------------
-!UseBasis={QTet|TETRAHEDRAL_ELEMENT|NL2|KEAST_LYNESS8}
-!UseBasis={QTri|TRIANGLE_ELEMENT|NL2|KEAST_LYNESS8}
-!UseBasis={LTet|TETRAHEDRAL_ELEMENT|NL1|KEAST_LYNESS8}
-!UseBasis={LTri|TRIANGLE_ELEMENT|NL1|KEAST_LYNESS8}
-!UseBasis={ZQuad|TRIANGLE_ELEMENT|NL0|KEAST_LYNESS8}
+!UseBasis={QHex|HEXAHEDRAL_ELEMENT|NL2|GAUSS_LEGENDRE9}
+!UseBasis={QQuad|QUADRILATERAL_ELEMENT|NL2|GAUSS_LEGENDRE9}
+!UseBasis={LHex|HEXAHEDRAL_ELEMENT|NL1|GAUSS_LEGENDRE9}
+!UseBasis={ZQuad|QUADRILATERAL_ELEMENT|NL0|GAUSS_LEGENDRE9}
 % ----  Topologies  ----------------------------------------------------------------------
-!DefTopology={TPQuad|mesh_mia/model_quad|QTet}
-!DefTopology={TPLin|mesh_mia/model|LTet}
-!DefTopology={TPInlet|mesh_mia/model_inlet|QTri}
-  !SetTopology={TPInlet|CreateInBoundary|[TPLin;2]}
-!DefTopology={TPOutlet|mesh_mia/model_outlet|QTri}
-  !SetTopology={TPOutlet|CreateInBoundary|[TPLin;4]}
-!DefInterface={OneToOne|TPQuad|TPLin}
-!DefInterface={ManyToOne|TPInlet|TPLin|mesh_mia/interface-inlet.IN|NestedInBndry[2]}
-!DefInterface={ManyToOne|TPOutlet|TPLin|mesh_mia/interface-outlet.IN|NestedInBndry[4]}
+!DefTopology={TPQuad|mesh/quad|QHex}
+!DefTopology={TPLin|mesh/lin|LHex}
+!DefTopology={TPInner|mesh/inner|QQuad}
+  !SetTopology={TPInner|CreateInBoundary|[TPQuad;3]}
+!DefTopology={TPOuter|mesh/outer|QQuad}
+  !SetTopology={TPOuter|CreateInBoundary|[TPQuad;4]}
+!DefTopology={TPInlet|mesh/inlet|QQuad}
+  !SetTopology={TPInlet|CreateInBoundary|[TPQuad;1]}
+!DefTopology={TPOutlet|mesh/outlet|QQuad}
+  !SetTopology={TPOutlet|CreateInBoundary|[TPQuad;2]}
+!DefTopology={TPAzB|mesh/CLBody|QQuad}
+!DefTopology={TPAzL|mesh/CLIFace|ZQuad}
+  !SetTopology={TPAzL|MakeDiscontinuous}
+!DefInterface={OneToOne|TPLin|TPQuad}
+!DefInterface={OneToOne|TPAzB|TPAzL}
+!DefInterface={ManyToOne|TPInlet|TPQuad|mesh/iface-inlet.IN|NestedInBndry[1]}
+!DefInterface={ManyToOne|TPOutlet|TPQuad|mesh/iface-outlet.IN|NestedInBndry[2]}
+!DefInterface={ManyToOne|TPAzB|TPQuad|mesh/iface-cl.IN|NestedInBndry[4]}
 % ----  Variables  -----------------------------------------------------------------------
-!DefVariablePointer={template|TPLin|mesh_mia/model|3}
-!DefVariablePointer={Xi|TPQuad|mesh_mia/model_quad|3}
-!DefVariablePointer={X0|TPQuad|mesh_mia/model_quad|3}
+!DefVariablePointer={template|TPLin|mesh/lin|3}
+!DefVariablePointer={Xi|TPQuad|results_straight_center/X0-100.D|3}
+!DefVariablePointer={X0|TPQuad|results_straight_center/X0-100.D|3}
 !DefVariablePointer={U|TPQuad|3}
 !DefVariablePointer={P|TPLin|1}
-!DefVariablePointer={R|TPLin|mesh_mia/R-0.D|3}
-!DefVariablePointer={Z|TPLin|mesh_mia/Z-0.D|3}
-!DefVariablePointer={C|TPLin|mesh_mia/C-0.D|3}
+!DefVariablePointer={LMCL|TPAzL|2}
+!DefVariablePointer={R|TPQuad|mesh/R-0.D|3}
+!DefVariablePointer={Z|TPQuad|mesh/Z-0.D|3}
+!DefVariablePointer={C|TPQuad|mesh/C-0.D|3}
+!DefVariablePointer={Az|TPQuad|mesh/Az-0.D|2}
+!DefVariablePointer={AzDomain|TPAzL|mesh/CLDomain-0.D|3}
 !DefVariablePointer={ResidualWeights|TPQuad|3}
   !SetVariablePointer={ResidualWeights|TEMPORAL_UPDATE_EXPR|residual_weights}
 !DefVariablePointer={ResidualVectors|TPQuad|9}
   !SetVariablePointer={ResidualVectors|INIT_EXPR|residual_vectors}
-!DefVariablePointer={TLMInlet|TPInlet|3}
-!DefVariablePointer={TLMOutlet|TPOutlet|3}
+!DefVariablePointer={RLMInlet|null_topology|3}
+!DefVariablePointer={TLMOutlet|TPOutlet|2}
 % ----  Export Frequency  ----------------------------------------------------------------
-!SetExportFrequency={X0|Xi|P|U|R|Z|C|ResidualWeights|ResidualVectors|TLMInlet|TLMOutlet|1}
+!SetExportFrequency={X0|Xi|P|U|R|Z|C|ResidualWeights|ResidualVectors|RLMInlet|TLMOutlet|1}
 % ----  Problem Definitions  -------------------------------------------------------------
 !DefProblem={PSolid|quasi_static_elasticity}
   !UseVariablePointer={Space|X0}
   !UseVariablePointer={Displacement|U}
   !UseVariablePointer={Pressure|P}
-  !UseVariablePointer={ResidualF-weights|ResidualWeights}
-  !UseVariablePointer={ResidualF-deformedvectors|ResidualVectors}
-  !Inverse-mechanics
+%  !UseVariablePointer={ResidualF-weights|ResidualWeights}
+%  !UseVariablePointer={ResidualF-deformedvectors|ResidualVectors}
   !Density={1e-06}
   !ConstitutiveLaw={neohookean}
-    150.0
+    10.0
   !Boundary-patch-definitions
-    2  U  dirichlet  0 0 0
-    5  U  dirichlet  0 0 0
-    6  U  dirichlet  0 0 0
-    7  U  dirichlet  0 0 0
+    1  U.1  dirichlet  0
+    2  U.1  dirichlet  axial_displacement
 
-!DefProblem={PTranslationInlet|fscoupling_problem}
+!DefProblem={PCLStationary|fscoupling_problem}
   !UseVariablePointer={Space|Xi}
-  !Addterms={TestVariable[U]|TLMInlet}
-  !Addterms={TestVariable[TLMInlet*]|U}
+  !Addterms={TestVariable[U]|LMCL[cl_cons_lm]}
+  !Addterms={TestVariable[LMCL*]|U[cl_cons_u]}
+  !SetPerturbationBuild
+  !SetRootTopology={TPAzB}
+  !Boundary-conditions-not-required
+
+!DefProblem={PRotationInlet|fscoupling_problem}
+  !UseVariablePointer={Space|Xi}
+  !Addterms={TestVariable[U]|RLMInlet[rot_cons_inlet_T]}
+  !Addterms={TestVariable[RLMInlet*]|U[rot_cons_inlet]}
   !SetPerturbationBuild
   !SetRootTopology={TPInlet}
   !Boundary-conditions-not-required
 
 !DefProblem={PTranslationOutlet|fscoupling_problem}
   !UseVariablePointer={Space|Xi}
-  !Addterms={TestVariable[U]|TLMOutlet}
-  !Addterms={TestVariable[TLMOutlet*]|U}
+  !Addterms={TestVariable[U]|TLMOutlet[rot_cons_outlet_lm]}
+  !Addterms={TestVariable[TLMOutlet*]|U[rot_cons_outlet_u]}
   !SetPerturbationBuild
   !SetRootTopology={TPOutlet}
   !Boundary-conditions-not-required
@@ -97,6 +113,16 @@
   !SetPerturbationBuild
   !Output-filename={outlet_traction-0.D}
   !Boundary-conditions-not-required
+
+!DefExpression={gravity_expr}
+  0.0
+  0.0
+  -100*min(t, 1)
+
+
+!DefExpression={axial_displacement}
+  (axial_stretch - 1.0) * 1000.0
+
 
 !DefExpression={axial_stretch}
   1.0 + #strain * min(t, 1.0)
@@ -144,3 +170,42 @@
   0
   1
   -X0.2
+
+
+!DefExpression={rot_cons_outlet_u}
+  0
+  1
+  0
+  0
+  0
+  1
+
+
+!DefExpression={rot_cons_outlet_lm}
+  0
+  0
+  1
+  0
+  0
+  1
+
+
+!DefExpression={cl_basis}
+  max(min((Az.1 - AzDomain.1)/(AzDomain.2 - AzDomain.1),(AzDomain.3 - Az.1)/(AzDomain.3 - AzDomain.2)), 0)
+
+
+!DefExpression={cl_cons_u}
+  0
+  cl_basis
+  0
+  0
+  0
+  cl_basis
+
+!DefExpression={cl_cons_lm}
+  0
+  0
+  cl_basis
+  0
+  0
+  cl_basis
