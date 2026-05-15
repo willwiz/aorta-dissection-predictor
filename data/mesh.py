@@ -3,9 +3,18 @@
 # ///
 
 from pathlib import Path
-from typing import Literal, get_args
+from typing import TYPE_CHECKING, Literal, get_args
 
 from code_pkg.mesh import DissectedType, MeshDef, MeshDefN, TopologyType
+
+if TYPE_CHECKING:
+    from cheartpy.fe.aliases import VolumeTopologyDef
+
+TEMPLATE_AORTA: VolumeTopologyDef = {
+    "elem": "tet",
+    "order": 1,
+    "mesh": Path("mesh_aorta") / "model",
+}
 
 DEFAULT_CYLINDER: MeshDef = {
     "geo": {

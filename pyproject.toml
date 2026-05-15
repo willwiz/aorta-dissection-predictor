@@ -16,5 +16,5 @@ cheartpy = { workspace = true, editable = true }
 [tool.uv.workspace]
 members = [
     "code-pkg",
-    ".deps/cheartpy",
+    ".deps/cheartpy"
 ]

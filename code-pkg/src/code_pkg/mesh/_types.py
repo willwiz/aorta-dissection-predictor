@@ -27,6 +27,7 @@ type DissectedType = Literal[
     "ca3",
 ]
 
+
 class CylinderDef(TypedDict, total=False):
     """Definition of a cylinder mesh.
 
@@ -124,6 +125,7 @@ class MeshDef(TypedDict, total=False):
     fields: Required[FieldTags]
     bnds: Required[Mapping[_BNDS, BndTag]]
     space: str
+
 
 class MeshDefN[T](TypedDict, total=False):
     """Definition of a mesh.

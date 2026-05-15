@@ -5,7 +5,8 @@
     "compute_*.py",
     "construct_*.py",
     "main.py",
-    "code-pkg"
+    "code-pkg",
+    ".deps",
   ],
   "exclude": [
     ".git",
@@ -21,9 +22,7 @@
     "**/*.log",
     "prestretch_*",
   ],
-  "ignore": [
-    ".deps"
-  ],
+  "ignore": [".deps"],
   "typeCheckingMode": "strict",
   "deprecateTypingAliases": true,
   "strictDictionaryInference": true,

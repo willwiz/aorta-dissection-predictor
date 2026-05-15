@@ -22,7 +22,7 @@ def main(mesh: Path) -> None:
     r = chread_d(mesh / "transmural.D")
     z = chread_d(mesh / "longitudinal.D")
     z = z - (np.einsum("ij,ij->i", z, r) / np.einsum("ij,ij->i", r, r))[:, np.newaxis] * r
-    c = np.cross(r, z)
+    c = np.cross(r, z).astype(r.dtype)
     c = normalize_by_row(c)
     r = normalize_by_row(r)
     z = normalize_by_row(z)
